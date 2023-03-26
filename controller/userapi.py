@@ -12,6 +12,7 @@ try:
     from firebase_admin import auth
     from firebase_admin import credentials
     from firebase_admin import storage
+    from firebase_admin import _auth_utils
     from firebase import Firebase
 
     firebaseConfig = {
@@ -75,11 +76,22 @@ except ModuleNotFoundError:
 userapi = APIRouter(prefix="/api/user", tags=["user"])
 
 "응답 정의 구역"
-Missing_Email = {"code":"ER003", "message":"Missing email"}
-Missing_Password = {"code":"ER004", "message":"Missing password"}
-Password_is_Too_Short = {"code":"ER005", "message":"Password is too short"}
-Too_Many_Duplicate_Characters = {"code":"ER006", "message":"Too many duplicate characters"}
-Missing_Nickname = {"code":"ER007", "message":"Missing nickname"}
+Missing_Email = {"code":"ER003", "message":"MISSING EMAIL"}
+Missing_Password = {"code":"ER004", "message":"MISSING PASSWORD"}
+Password_is_Too_Short = {"code":"ER005", "message":"PASSWORD IS TOO SHORT"}
+Too_Many_Duplicate_Characters = {"code":"ER006", "message":"TOO MANY DUPLICATE CHARACTERS"}
+Missing_Nickname = {"code":"ER007", "message":"MISSING NICKNAME"}
+
+Invaild_Email = {"code":"ER008", "message":"INVAILD_EMAIL"}
+Invaild_Password = {"code":"ER009", "message":"INVAILD_PASSWORD"}
+Email_Exists = {"code":"ER010", "message":"EMAIL_EXIST"}
+
+User_NotFound = {"code":"ER011", "message":"USER_NOT_FOUND"}
+
+
+Token_Revoke = {"code":"ER999", "message":"TOKEN REVOKED"}
+Invalid_Token = {"code":"ER998", "message":"INVALID TOKEN"}
+User_Disabled = {"code":"ER997", "message":"USER DISABLED"}
 
 login_responses = {
     400: {
@@ -89,19 +101,23 @@ login_responses = {
                 "examples": {
                     "Missing password": {
                         "summary": "비밀번호가 입력되지 않았습니다.",
-                        "value": Missing_Password
+                        "value": {"detail":Missing_Password}
                     },
                     "Missing email": {  
                         "summary": "이메일이 입력되지 않았습니다.",
-                        "value": Missing_Email
+                        "value": {"detail":Missing_Email}
                     },
                     "invaild email": {
                         "summary": "아이디의 입력값이 이메일이 아니거나, 이메일이 유효하지 않습니다.",
-                        "value": {"detail":"INVALID_EMAIL"}
+                        "value": {"detail":Invaild_Email}
                     },
                     "invaild password": {
-                        "summary": "비밀번호 일치하지 않습니다.",
-                        "value": {"detail":"INVALID_PASSWORD"}
+                        "summary": "비밀번호가 일치하지 않습니다.",
+                        "value": {"detail":Invaild_Password}
+                    },
+                    "User Disabled": {
+                        "summary": "사용자가 비활성화 되었습니다.",
+                        "value": {"detail":User_Disabled}
                     }
                 }
             }
@@ -138,11 +154,7 @@ register_responses = {
                     },
                     "invaild email": {
                         "summary": "아이디의 입력값이 이메일이 아니거나, 이메일이 유효하지 않습니다.",
-                        "value": {"detail":"INVALID_EMAIL"}
-                    },
-                    "invaild password": {
-                        "summary": "비밀번호가 일치하지 않습니다.",
-                        "value": {"detail":"INVALID_PASSWORD"}
+                        "value": {"detail":Invaild_Email}
                     },
                     "Password is Too Short": {
                         "summary": "비밀번호가 너무 짧습니다. 비밀번호는 6자 이상이어야 합니다.",
@@ -158,7 +170,51 @@ register_responses = {
                     },
                     "EMail Exists": {
                         "summary": "이미 가입되어있는 이메일입니다.",
-                        "value": {"detail":"EMAIL_EXISTS"}
+                        "value": {"detail":Email_Exists}
+                    }
+                }
+            }
+        }
+    }
+}
+
+token_verify_responses = {
+    400: {
+        "description": "Bad Request",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Token Revoked": {
+                        "summary": "토근이 취소되었습니다. (재 로그인 필요)",
+                        "value": {"detail":Token_Revoke}
+                    },
+                    "Invaild Token": {  
+                        "summary": "토큰이 유효하지 않습니다.",
+                        "value": {"detail":Invalid_Token}
+                    },
+                    "User Disabled": {  
+                        "summary": "해당 유저는 비활성화 되어있습니다.",
+                        "value": {"detail":User_Disabled}
+                    }
+                }
+            }
+        }
+    }
+}
+
+token_revoke_responses = {
+    400: {
+        "description": "Bad Request",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "User Not Found": {
+                        "summary": "해당 유저는 존재하지 않습니다.",
+                        "value": {"detail":User_NotFound}
+                    },
+                    "Invalid Token": {
+                        "summary": "토큰이 유효하지 않습니다.",
+                        "value": {"detail":Invalid_Token}
                     }
                 }
             }
@@ -179,10 +235,57 @@ class LoginResponse(BaseModel):
     id: str
     nickname: str
     email: str
-    created_at: str
+    access_token: str
+    refresh_token: str
+    expires_in: int
+    Created_At: str
 
 class RegisterResponse(BaseModel):
     detail: str
+
+class verify_token(BaseModel):
+    access_token: str
+
+class verify_token_res(BaseModel):
+    uid: str
+    email: str
+
+class token_revoke(BaseModel):
+    uid: str
+
+
+class token_revoke_res(BaseModel):
+    detail: str
+
+@userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
+async def verify_token(token: verify_token):
+    try:
+        # Verify the ID token while checking if the token is revoked by
+        # passing check_revoked=True.
+        decoded_token = auth.verify_id_token(token.access_token, check_revoked=True)
+        # Token is valid and not revoked.
+        return decoded_token
+    except auth.RevokedIdTokenError:
+        # Token revoked, inform the user to reauthenticate or signOut().
+        raise HTTPException(status_code=400, detail=Token_Revoke)
+    except auth.UserDisabledError:
+        # Token belongs to a disabled user record.
+        raise HTTPException(status_code=400, detail=User_Disabled)
+    except auth.InvalidIdTokenError:
+        # Token is invalid
+        raise HTTPException(status_code=400, detail=Invalid_Token)
+    
+@userapi.post("/revoke_token", response_model=token_revoke_res, responses=token_revoke_responses)
+async def revoke_token(token: token_revoke):
+    try:
+        auth.revoke_refresh_tokens(token.uid)
+        user = auth.get_user(token.uid)
+        revocation = user.tokens_valid_after_timestamp / 1000
+        return {"detail": 'Tokens revoked at: {0}'.format(revocation)}
+    except _auth_utils.InvalidIdTokenError:
+        raise HTTPException(status_code=400, detail=Invalid_Token)
+    except _auth_utils.UserNotFoundError:
+        raise HTTPException(status_code=400, detail=User_NotFound)
 
 @userapi.post('/login', response_model=LoginResponse, responses=login_responses)
 async def user_login(userdata: UserLogindata):
@@ -203,9 +306,24 @@ async def user_login(userdata: UserLogindata):
         res = json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
         if " : " in res:
             res = res.split(" : ")[0]
-            raise HTTPException(status_code=400, detail=res)
+            if res == "INVALID_EMAIL":
+                raise HTTPException(status_code=400, detail=Invaild_Email)
+
+            if res == "INVALID_PASSWORD":
+                raise HTTPException(status_code=400, detail=Invaild_Password)
+
+            if res == "USER_DISABLED":
+                raise HTTPException(status_code=400, detail=User_Disabled)
+
         else:
-            raise HTTPException(status_code=400, detail=res)
+            if res == "INVALID_EMAIL":
+                raise HTTPException(status_code=400, detail=Invaild_Email)
+
+            if res == "INVALID_PASSWORD":
+                raise HTTPException(status_code=400, detail=Invaild_Password)
+
+            if res == "USER_DISABLED":
+                raise HTTPException(status_code=400, detail=User_Disabled)
 
     currentuser = Auth.current_user
     user = requests.post(
@@ -213,7 +331,12 @@ async def user_login(userdata: UserLogindata):
         json={'Id':currentuser['localId']}
     )
     user.encoding = "UTF-8"
-    return json.loads(user.text)
+    userjson = json.loads(user.text)
+    userjson['access_token'] = currentuser['idToken']
+    userjson['refresh_token'] = currentuser['refreshToken']
+    userjson['expires_in'] = currentuser['expiresIn']
+
+    return userjson
 
 @userapi.post("/register", response_model=RegisterResponse, responses=register_responses)
 async def user_create(userdata: UserRegisterdata):
