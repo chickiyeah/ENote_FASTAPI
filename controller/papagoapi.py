@@ -179,36 +179,34 @@ async def translate(text: TranslateValue, authorized: bool = Depends(verify_toke
 
             originlangcode = res
 
-            if "code" not in list(originlangcode.keys()):
-                originlangcode['code'] = "OK"
+        if "code" not in list(originlangcode.keys()):
+            originlangcode['code'] = "OK" 
 
-            
+        code = originlangcode['code']
+        if code == "ER001":
+            raise HTTPException(status_code=400, detail=textnotfound)
 
-                code = originlangcode['code']
-                if code == "ER001":
-                    raise HTTPException(status_code=400, detail=textnotfound)
+        if code == "ER002":
+            raise HTTPException(status_code=400, detail=nosupportlang)
 
-                if code == "ER002":
-                    raise HTTPException(status_code=400, detail=nosupportlang)
+        if originlangcode['langCode'] == "ko":
+            originlang = {'source':'ko','target':'en','text':text}
 
-                if originlangcode['langCode'] == "ko":
-                    originlang = {'source':'ko','target':'en','text':text}
+            translang = requests.post(
+                url="https://openapi.naver.com/v1/papago/n2mt",
+                headers=papagoheaders,
+                data=originlang
+            )
 
-                    translang = requests.post(
-                        url="https://openapi.naver.com/v1/papago/n2mt",
-                        headers=papagoheaders,
-                        data=originlang
-                    )
+            return {"text":json.loads(translang.text)['message']['result']['translatedText']}
 
-                    return {"text":json.loads(translang.text)['message']['result']['translatedText']}
+        if originlangcode['langCode'] == "en" or originlangcode['langCode'] == "fr":
+            originlang = {'source':'en','target':'ko','text':text}
 
-                if originlangcode['langCode'] == "en" or originlangcode['langCode'] == "fr":
-                    originlang = {'source':'en','target':'ko','text':text}
+            translang = requests.post(
+                url="https://openapi.naver.com/v1/papago/n2mt",
+                headers=papagoheaders,
+                data=originlang
+            )
 
-                    translang = requests.post(
-                        url="https://openapi.naver.com/v1/papago/n2mt",
-                        headers=papagoheaders,
-                        data=originlang
-                    )
-
-                    return {"text":str(json.loads(translang.text)['message']['result']['translatedText'])}
+            return {"text":str(json.loads(translang.text)['message']['result']['translatedText'])}
