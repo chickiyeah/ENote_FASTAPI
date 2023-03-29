@@ -19,8 +19,8 @@ textnotfound = {'code':'ER001','message':'TEXT NOT FOUND'}
 nosupportlang = {'code':'ER002','message':'This Lang Not Support'}
 unauthorized = {'code':'ER013','message':'unauthorized'}
 unauthorized_revoked = {'code':'ER014','message':'unauthorized (Revoked Token)'}
-unauthorized_invaild = {'code':'ER014','message':'unauthorized (Token Invalid)'}
-unauthorized_userdisabled = {'code':'ER014','message':'unauthorized (Tokens from disabled users)'}
+unauthorized_invaild = {'code':'ER015','message':'unauthorized (Token Invalid)'}
+unauthorized_userdisabled = {'code':'ER016','message':'unauthorized (Tokens from disabled users)'}
 
 tokorcode = ['en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'id', 'th', 'de', 'ru', 'es', 'it', 'fr']
 
