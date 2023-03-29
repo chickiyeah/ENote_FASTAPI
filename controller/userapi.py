@@ -1,5 +1,5 @@
 import json
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 import os
 import requests
@@ -256,6 +256,24 @@ class token_revoke(BaseModel):
 
 class token_revoke_res(BaseModel):
     detail: str
+
+def verify_tokena(req: Request):
+    token = req.headers["Authorization"]    
+    try:
+        # Verify the ID token while checking if the token is revoked by
+        # passing check_revoked=True.
+        auth.verify_id_token(token, check_revoked=True)
+        # Token is valid and not revoked.
+        return True
+    except auth.RevokedIdTokenError:
+        # Token revoked, inform the user to reauthenticate or signOut().
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    except auth.UserDisabledError:
+        # Token belongs to a disabled user record.
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    except auth.InvalidIdTokenError:
+        # Token is invalid
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
 @userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
 async def verify_token(token: verify_token):
