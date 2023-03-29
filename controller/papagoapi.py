@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends, Header, Request
 from fastapi.security import OAuth2
 from pydantic import BaseModel
 import os
+from firebase_admin import auth
 
 try:
     import requests
