@@ -17,6 +17,7 @@ papagoapi = APIRouter(prefix="/api/papago",tags=["Papago"])
 
 textnotfound = {'code':'ER001','message':'TEXT NOT FOUND'}
 nosupportlang = {'code':'ER002','message':'This Lang Not Support'}
+unauthorized = {'code':'ER013','message':'unauthorized'}
 
 tokorcode = ['en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'id', 'th', 'de', 'ru', 'es', 'it', 'fr']
 
@@ -57,6 +58,19 @@ responses = {
                 }
             }
         }
+    },
+    401: {
+        "description": "Unauthorized",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Unauthorized": {
+                        "summary": "인증 헤더값(Authorization)이(가) 필요합니다. (유저 엑세스 토큰)",
+                        "value": {"detail":unauthorized}
+                    }
+                }
+            }
+        }             
     }
 }
 
@@ -71,15 +85,15 @@ def verify_tokena(req: Request):
         return True
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=unauthorized)
     except auth.UserDisabledError:
         # Token belongs to a disabled user record.
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=unauthorized)
     except auth.InvalidIdTokenError:
         # Token is invalid
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=unauthorized)
     except KeyError:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=unauthorized)
 
 @papagoapi.post('/detectlang', response_model=DetectLangRes, responses=responses)
 async def detectlang(text: DetectLangValue):
