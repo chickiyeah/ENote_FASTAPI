@@ -18,6 +18,9 @@ papagoapi = APIRouter(prefix="/api/papago",tags=["Papago"])
 textnotfound = {'code':'ER001','message':'TEXT NOT FOUND'}
 nosupportlang = {'code':'ER002','message':'This Lang Not Support'}
 unauthorized = {'code':'ER013','message':'unauthorized'}
+unauthorized_revoked = {'code':'ER014','message':'unauthorized (Revoked Token)'}
+unauthorized_invaild = {'code':'ER014','message':'unauthorized (Token Invalid)'}
+unauthorized_userdisabled = {'code':'ER014','message':'unauthorized (Tokens from disabled users)'}
 
 tokorcode = ['en', 'ja', 'zh-CN', 'zh-TW', 'vi', 'id', 'th', 'de', 'ru', 'es', 'it', 'fr']
 
@@ -65,8 +68,20 @@ responses = {
             "application/json": {
                 "examples": {
                     "Unauthorized": {
-                        "summary": "인증 헤더값(Authorization)이(가) 필요합니다. (유저 엑세스 토큰)",
+                        "summary": "인증 헤더값(Authorization)이(가) 필요합니다.",
                         "value": {"detail":unauthorized}
+                    },
+                    "Revoked Token": {
+                        "summary": "취소된 엑세스 토큰이 입력되었습니다.",
+                        "value": {"detail":unauthorized_revoked}
+                    },
+                    "Invalid Token": {
+                        "summary": "엑세스 토큰이 올바르지 않습니다.",
+                        "value": {"detail":unauthorized_invaild}
+                    },
+                    "User Disabled": {
+                        "summary": "비활성화된 사용자의 엑세스 토큰이 사용되었습니다.",
+                        "value": {"detail":unauthorized_userdisabled}
                     }
                 }
             }
@@ -85,13 +100,13 @@ def verify_tokena(req: Request):
         return True
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=401, detail=unauthorized)
+        raise HTTPException(status_code=401, detail=unauthorized_revoked)
     except auth.UserDisabledError:
         # Token belongs to a disabled user record.
-        raise HTTPException(status_code=401, detail=unauthorized)
+        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
     except auth.InvalidIdTokenError:
         # Token is invalid
-        raise HTTPException(status_code=401, detail=unauthorized)
+        raise HTTPException(status_code=401, detail=unauthorized_invaild)
     except KeyError:
         raise HTTPException(status_code=401, detail=unauthorized)
 
