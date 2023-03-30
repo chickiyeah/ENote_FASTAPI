@@ -151,3 +151,15 @@ async def get_10_note(page: NoteGetPer10,authorized: bool = Depends(verify_user_
         
         return(json.loads(response.text))
         
+@noteapi.post("/get_all")
+async def get_all_note(authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        try:
+            response = requests.post(
+                "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/get_all",
+                json={"Author": list(authorized)[1]}
+            )
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+        return(json.loads(response.text))
