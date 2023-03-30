@@ -88,6 +88,10 @@ class NoteAdd(BaseModel):
     English: str
     Speak: str and None
 
+class NoteGetPer10(BaseModel):
+    Page: int
+
+
 def verify_user_token(req: Request):
 
     try:
@@ -131,4 +135,19 @@ async def add_note(note: NoteAdd, authorized: bool = Depends(verify_user_token))
         if(response.text == "\"Status Code : 200 | OK : Successfully added data \""):
             return json.loads('{"detail":"Note Added Successfully"}')
         
-#@noteapi.post("/get")
+@noteapi.post("/get_10")
+async def get_10_note(page: NoteGetPer10,authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        json_10 = json.loads(json.dumps(page.dict()))
+        json_10["Author"] = list(authorized)[1]
+        json_10["Page"] = json_10["Page"] - 1
+        try:
+            response = requests.post(
+                "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/get_10",
+                json=json_10
+            )
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+        return(json.loads(response.text))
+        
