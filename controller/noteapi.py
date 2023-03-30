@@ -24,8 +24,8 @@ english_cannot_be_empty = {'code':'ER019','message':'english cannot be empty'}
 
 
 responses = {
-    200: {
-        "description": "OK",
+    201: {
+        "description": "Created successfully",
         "content": {
             "application/json": {
                 "examples": {
@@ -91,6 +91,11 @@ class NoteAdd(BaseModel):
 class NoteGetPer10(BaseModel):
     Page: int
 
+class NoteUpdate(BaseModel):
+    key: str
+    value: str
+    Created_At: str
+
 
 def verify_user_token(req: Request):
 
@@ -113,7 +118,7 @@ def verify_user_token(req: Request):
     except KeyError:
         raise HTTPException(status_code=401, detail=unauthorized)
     
-@noteapi.post("/add", responses=responses)
+@noteapi.post("/add", responses=responses, status_code=201)
 async def add_note(note: NoteAdd, authorized: bool = Depends(verify_user_token)):
     if authorized:
         if note.Korean == "":
@@ -151,7 +156,7 @@ async def get_10_note(page: NoteGetPer10,authorized: bool = Depends(verify_user_
         
         return(json.loads(response.text))
         
-@noteapi.post("/get_all")
+@noteapi.get("/get_all")
 async def get_all_note(authorized: bool = Depends(verify_user_token)):
     if authorized:
         try:
@@ -163,3 +168,27 @@ async def get_all_note(authorized: bool = Depends(verify_user_token)):
             raise HTTPException(status_code=500, detail=str(e))
         
         return(json.loads(response.text))
+
+@noteapi.patch("/update")
+async def update_note(note: NoteUpdate, authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        if note.Korean == "":
+            raise HTTPException(status_code=401, detail=korean_cannot_be_empty)
+        if note.English == "":
+            raise HTTPException(status_code=401, detail=english_cannot_be_empty)
+        
+        notejson = json.loads(json.dumps(note.dict()))
+        notejson["Author"] = list(authorized)[1]
+        notejson['Created_At'] = datetime.datetime(note.created_at)
+        try:
+            response = requests.patch(
+                "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/update",
+                json=notejson
+            )
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+
+        if(response.text == "\"Status Code : 200 | OK : Successfully Update data \""):
+            return json.loads('{"detail":"Note Update Successfully"}')
+    

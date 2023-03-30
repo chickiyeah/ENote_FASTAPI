@@ -126,7 +126,7 @@ login_responses = {
 }
 
 register_responses = {
-    200: {
+    201: {
         "description": "가입 성공",
         "content": {
             "application/json": {
@@ -356,7 +356,7 @@ async def user_login(userdata: UserLogindata):
 
     return userjson
 
-@userapi.post("/register", response_model=RegisterResponse, responses=register_responses)
+@userapi.post("/register", response_model=RegisterResponse, responses=register_responses, status_code=201)
 async def user_create(userdata: UserRegisterdata):
     now = datetime.datetime.now()
     email = userdata.email
