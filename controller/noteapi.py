@@ -4,6 +4,7 @@ from fastapi.security import OAuth2
 from pydantic import BaseModel
 import os
 from firebase_admin import auth
+import datetime
 
 try:
     import requests
@@ -43,16 +44,12 @@ responses = {
         "content": {
             "application/json": {
                 "examples": {
-                    "Author Can Not Be Empty": {
-                        "summary": "Author Can Not Be Empty",
-                        "value": {"detail":author_cannot_be_empty}
-                    },
                     "korean Can Not Be Empty": {
-                        "summary": "korean Can Not Be Empty",
+                        "summary": "한국어란은 비워둘 수 없습니다.",
                         "value": {"detail":korean_cannot_be_empty}
                     },
                     "english Can Not Be Empty": {
-                        "summary": "english Can Not Be Empty",
+                        "summary": "영어란은 비워둘 수 없습니다.",
                         "value": {"detail":english_cannot_be_empty}
                     }
                 }
@@ -87,7 +84,6 @@ responses = {
 }
 
 class NoteAdd(BaseModel):
-    Author: str
     Korean: str
     English: str
     Speak: str and None
@@ -98,9 +94,9 @@ def verify_user_token(req: Request):
         token = req.headers["Authorization"]    
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
-        auth.verify_id_token(token, check_revoked=True)
+        user = auth.verify_id_token(token, check_revoked=True)
         # Token is valid and not revoked.
-        return True
+        return True, user['uid']
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
         raise HTTPException(status_code=401, detail=unauthorized_revoked)
@@ -116,14 +112,14 @@ def verify_user_token(req: Request):
 @noteapi.post("/add", responses=responses)
 async def add_note(note: NoteAdd, authorized: bool = Depends(verify_user_token)):
     if authorized:
-        if note.Author == "":
-            raise HTTPException(status_code=401, detail=author_cannot_be_empty)
         if note.Korean == "":
             raise HTTPException(status_code=401, detail=korean_cannot_be_empty)
         if note.English == "":
             raise HTTPException(status_code=401, detail=english_cannot_be_empty)
         
         notejson = json.loads(json.dumps(note.dict()))
+        notejson["Author"] = list(authorized)[1]
+        notejson['Created_At'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         try:
             response = requests.post(
                 "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/add",
@@ -134,3 +130,5 @@ async def add_note(note: NoteAdd, authorized: bool = Depends(verify_user_token))
         
         if(response.text == "\"Status Code : 200 | OK : Successfully added data \""):
             return json.loads('{"detail":"Note Added Successfully"}')
+        
+#@noteapi.post("/get")
