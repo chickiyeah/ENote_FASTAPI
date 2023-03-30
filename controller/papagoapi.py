@@ -89,7 +89,7 @@ responses = {
     }
 }
 
-def verify_tokena(req: Request):
+def verify_user_token(req: Request):
 
     try:
         token = req.headers["Authorization"]    
@@ -134,7 +134,7 @@ async def detectlang(text: DetectLangValue):
                 raise HTTPException(status_code=400, detail=nosupportlang)
 
 @papagoapi.post('/translate', responses=responses)
-async def translate(text: TranslateValue, authorized: bool = Depends(verify_tokena)):
+async def translate(text: TranslateValue, authorized: bool = Depends(verify_user_token)):
     if authorized:
         text = text.text
         if text == "":

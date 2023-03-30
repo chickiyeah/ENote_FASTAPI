@@ -4,7 +4,8 @@ app = FastAPI()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-from controller import userapi, papagoapi
+from controller import userapi, papagoapi, noteapi
 
 app.include_router(userapi.userapi)
 app.include_router(papagoapi.papagoapi)
+app.include_router(noteapi.noteapi)
