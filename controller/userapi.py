@@ -49,16 +49,17 @@ except ModuleNotFoundError:
     os.system('pip install crypto')
     os.system('pip install requests_toolbelt')
 
+    import crypto
+    import sys
+
+    sys.modules['Crypto'] = crypto
     import firebase_admin
     from firebase_admin import auth
     from firebase_admin import credentials
     from firebase_admin import storage
     from firebase import Firebase
 
-    import crypto
-    import sys
 
-    sys.modules['Crypto'] = crypto
 
 
     firebaseConfig = {
