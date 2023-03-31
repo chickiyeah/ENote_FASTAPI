@@ -377,7 +377,7 @@ async def user_login(userdata: UserLogindata):
         raise HTTPException(status_code=400, detail=Email_Not_Verified)
 
     return userjson
-
+#.
 @userapi.post("/register", response_model=RegisterResponse, responses=register_responses, status_code=201)
 async def user_create(userdata: UserRegisterdata):
     now = datetime.datetime.now()
