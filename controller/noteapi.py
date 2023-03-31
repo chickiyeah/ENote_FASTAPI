@@ -21,7 +21,6 @@ unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM
 korean_cannot_be_empty = {'code':'ER017','message':'KOREAN CANNOT BE EMPTY'}
 english_cannot_be_empty = {'code':'ER018','message':'ENGLISH CANNOT BE EMPTY'}
 
-#
 responses = {
     201: {
         "description": "Created successfully",
