@@ -7,7 +7,6 @@ import datetime
 import re
 import smtplib
 from email.message import EmailMessage
-import pyrebase
 
 s = smtplib.SMTP("smtp.gmail.com", 587)
 s.ehlo()
@@ -76,7 +75,6 @@ except ModuleNotFoundError:
         #파이어베이스 서비스 세팅
     cred = credentials.Certificate('./cert/serviceAccountKey.json')
     #default_app = firebase_admin.initialize_app(cred,{"databaseURL":"https://deli-english-web-default-rtdb.firebaseio.com"})
-    firebase = pyrebase.initialize_app(firebaseConfig)
 
     Auth = Firebase(firebaseConfig).auth()
     Storage = Firebase(firebaseConfig).storage()
