@@ -16,7 +16,7 @@ papagoapi = APIRouter(prefix="/api/papago",tags=["Papago"])
 
 
 textnotfound = {'code':'ER001','message':'TEXT NOT FOUND'}
-nosupportlang = {'code':'ER002','message':'This Lang Not Support'}
+nosupportlang = {'code':'ER002','message':'THIS LANGUAGE IS NOT SUPPORTED'}
 unauthorized = {'code':'ER013','message':'unauthorized'}
 unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
 unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}

@@ -96,7 +96,7 @@ Email_Exists = {"code":"ER010", "message":"EMAIL_EXISTS"}
 
 User_NotFound = {"code":"ER011", "message":"USER_NOT_FOUND"}
 
-Email_Not_Verified = {"code":"ER020", "message":"EMAIL_NOT_VERIFIED"}
+Email_Not_Verified = {"code":"ER012", "message":"EMAIL_NOT_VERIFIED"}
 
 Token_Revoke = {"code":"ER999", "message":"TOKEN REVOKED"}
 Invalid_Token = {"code":"ER998", "message":"INVALID TOKEN"}
