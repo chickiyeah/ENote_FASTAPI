@@ -14,13 +14,13 @@ except ModuleNotFoundError:
 
 noteapi = APIRouter(prefix="/api/note",tags=["Note"])
 
-unauthorized = {'code':'ER013','message':'unauthorized'}
-unauthorized_revoked = {'code':'ER014','message':'unauthorized (Revoked Token)'}
-unauthorized_invaild = {'code':'ER015','message':'unauthorized (Token Invalid)'}
-unauthorized_userdisabled = {'code':'ER016','message':'unauthorized (Tokens from disabled users)'}
-author_cannot_be_empty = {'code':'ER017','message':'author cannot be empty'}
-korean_cannot_be_empty = {'code':'ER018','message':'korean cannot be empty'}
-english_cannot_be_empty = {'code':'ER019','message':'english cannot be empty'}
+unauthorized = {'code':'ER013','message':'UNAUTHORIZED'}
+unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
+unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
+unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}
+author_cannot_be_empty = {'code':'ER017','message':'AUTHOR CANNOT BE EMPTY'}
+korean_cannot_be_empty = {'code':'ER018','message':'KOREAN CANNOT BE EMPTY'}
+english_cannot_be_empty = {'code':'ER019','message':'ENGLISH CANNOT BE EMPTY'}
 
 
 responses = {

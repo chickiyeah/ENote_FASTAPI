@@ -5,7 +5,14 @@ import os
 import requests
 import datetime
 import re
+import smtplib
+from email.message import EmailMessage
+import pyrebase
 
+s = smtplib.SMTP("smtp.gmail.com", 587)
+s.ehlo()
+s.starttls()
+s.login("noreply.enote", "iguffrrwnfhmocxt")
 
 try:   
     import firebase_admin
@@ -68,7 +75,8 @@ except ModuleNotFoundError:
 
         #파이어베이스 서비스 세팅
     cred = credentials.Certificate('./cert/serviceAccountKey.json')
-    default_app = firebase_admin.initialize_app(cred,{"databaseURL":"https://deli-english-web-default-rtdb.firebaseio.com"})
+    #default_app = firebase_admin.initialize_app(cred,{"databaseURL":"https://deli-english-web-default-rtdb.firebaseio.com"})
+    firebase = pyrebase.initialize_app(firebaseConfig)
 
     Auth = Firebase(firebaseConfig).auth()
     Storage = Firebase(firebaseConfig).storage()
@@ -84,10 +92,11 @@ Missing_Nickname = {"code":"ER007", "message":"MISSING NICKNAME"}
 
 Invaild_Email = {"code":"ER008", "message":"INVAILD_EMAIL"}
 Invaild_Password = {"code":"ER009", "message":"INVAILD_PASSWORD"}
-Email_Exists = {"code":"ER010", "message":"EMAIL_EXIST"}
+Email_Exists = {"code":"ER010", "message":"EMAIL_EXISTS"}
 
 User_NotFound = {"code":"ER011", "message":"USER_NOT_FOUND"}
 
+Email_Not_Verified = {"code":"ER020", "message":"EMAIL_NOT_VERIFIED"}
 
 Token_Revoke = {"code":"ER999", "message":"TOKEN REVOKED"}
 Invalid_Token = {"code":"ER998", "message":"INVALID TOKEN"}
@@ -118,6 +127,10 @@ login_responses = {
                     "User Disabled": {
                         "summary": "사용자가 비활성화 되었습니다.",
                         "value": {"detail":User_Disabled}
+                    },
+                    "Email Not Verified": {
+                        "summary": "이메일 인증이 완료되지 않았습니다.",
+                        "value": {"detail":Email_Not_Verified}
                     }
                 }
             }
@@ -277,10 +290,16 @@ def verify_tokena(req: Request):
 
 @userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
 async def verify_token(token: verify_token):
+
+    try:
+        usertoken = token.access_token
+    except AttributeError as e:
+        usertoken = token['access_token']
+
     try:
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
-        decoded_token = auth.verify_id_token(token.access_token, check_revoked=True)
+        decoded_token = auth.verify_id_token(usertoken, check_revoked=True)
         # Token is valid and not revoked.
         return decoded_token
     except auth.RevokedIdTokenError:
@@ -353,6 +372,9 @@ async def user_login(userdata: UserLogindata):
     userjson['access_token'] = currentuser['idToken']
     userjson['refresh_token'] = currentuser['refreshToken']
     userjson['expires_in'] = currentuser['expiresIn']
+    verify = await verify_token(userjson)
+    if verify['email_verified'] == False:
+        raise HTTPException(status_code=400, detail=Email_Not_Verified)
 
     return userjson
 
@@ -398,6 +420,16 @@ async def user_create(userdata: UserRegisterdata):
         'Nickname':nickname,
         'Created_At':str(now)
     }
+
+    res = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
+    message = res.replace("lang=en", "lang=ko")
+    msg = EmailMessage()
+    msg['Subject'] = '이메일을 인증하세요'
+    msg['From'] = "noreply.enote@gmail.com"
+    msg['To'] = email
+    msg.set_content("아래 링크를 클릭해서 이메일을 인증하세요.\n"+message)
+
+    s.send_message(msg)
     try:
         c = requests.post(
             url = 'https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/user/add',
@@ -411,3 +443,4 @@ async def user_create(userdata: UserRegisterdata):
         return json.loads('{"detail":"User Register Successfully"}')
     
     raise HTTPException(status_code=500, detail=json.loads(c.text)['message'])
+
