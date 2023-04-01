@@ -44,7 +44,82 @@ class TranslateRes(BaseModel):
     text: str
 
 
-responses = {
+detect_responses = {
+    200: {
+        "description": "Detected language",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Added Successfully": {
+                        "summary": "Detect Successfully",
+                        "value": {                                                        
+                            "langCode": "감지된 언어의 코드 (en, fr, ko)"
+                        }
+                    }
+                }
+            }
+        }
+    }, 
+    400: {
+        "description": "Bad Request",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Text Not Found": {
+                        "summary": "텍스트가 입력되지 않았습니다.",
+                        "value": textnotfound
+                    },
+                    "No Support Lang": {
+                        "summary": "지원하지 않는 언어입니다.",
+                        "value": nosupportlang
+                    }
+                }
+            }
+        }
+    },
+    401: {
+        "description": "Unauthorized",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Unauthorized": {
+                        "summary": "인증 헤더값(Authorization)이(가) 필요합니다.",
+                        "value": {"detail":unauthorized}
+                    },
+                    "Revoked Token": {
+                        "summary": "취소된 엑세스 토큰이 입력되었습니다.",
+                        "value": {"detail":unauthorized_revoked}
+                    },
+                    "Invalid Token": {
+                        "summary": "엑세스 토큰이 올바르지 않습니다.",
+                        "value": {"detail":unauthorized_invaild}
+                    },
+                    "User Disabled": {
+                        "summary": "비활성화된 사용자의 엑세스 토큰이 사용되었습니다.",
+                        "value": {"detail":unauthorized_userdisabled}
+                    }
+                }
+            }
+        }             
+    }
+}
+
+translate_responses = {
+    200: {
+        "description": "Translate language",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Added Successfully": {
+                        "summary": "Translate Successfully",
+                        "value": {                                                        
+                            "text": "번역 결과"
+                        }
+                    }
+                }
+            }
+        }
+    }, 
     400: {
         "description": "Bad Request",
         "content": {
@@ -110,7 +185,7 @@ def verify_user_token(req: Request):
     except KeyError:
         raise HTTPException(status_code=401, detail=unauthorized)
 
-@papagoapi.post('/detectlang', response_model=DetectLangRes, responses=responses)
+@papagoapi.post('/detectlang', response_model=DetectLangRes, responses=detect_responses)
 async def detectlang(text: DetectLangValue):
         try:
             text = text.text
@@ -133,7 +208,7 @@ async def detectlang(text: DetectLangValue):
             else:
                 raise HTTPException(status_code=400, detail=nosupportlang)
 
-@papagoapi.post('/translate', responses=responses)
+@papagoapi.post('/translate', responses=translate_responses)
 async def translate(text: TranslateValue, authorized: bool = Depends(verify_user_token)):
     if authorized:
         text = text.text

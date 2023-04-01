@@ -23,6 +23,9 @@ unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM
 korean_cannot_be_empty = {'code':'ER017','message':'KOREAN CANNOT BE EMPTY'}
 english_cannot_be_empty = {'code':'ER018','message':'ENGLISH CANNOT BE EMPTY'}
 
+created_at_error = {'code':'ER019','message':'CREATED_AT_ERROR Correct Value : year, month, day, hour, minute, second'}
+no_data_error = {'code':'ER020','message':'DATA NOT FOUND'}
+
 responses = {
     201: {
         "description": "Created successfully",
@@ -80,6 +83,157 @@ responses = {
                 }
             }
         }             
+    }
+}
+
+update_responses = {
+    200: {
+        "description": "Update successfully",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Added Successfully": {
+                        "summary": "아무 오류도 없이 변경에 성공했습니다.",
+                        "value": {
+                            "detail": "Note Update Successfully"
+                        }
+                    },
+                    "Updated Successfully with some warning": {
+                        "summary": "두개 이상의 노트가 동시에 변경되었습니다.",
+                        "value": {
+                            "detail": "WARNING: TWO OR MORE DATA CHANGED AT THE SAME TIME"
+                        }
+                    }
+                }
+            }
+        }
+    }, 
+    400: {
+        "description": "Bad Request",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "korean Can Not Be Empty": {
+                        "summary": "한국어란은 비워둘 수 없습니다.",
+                        "value": {"detail":korean_cannot_be_empty}
+                    },
+                    "english Can Not Be Empty": {
+                        "summary": "영어란은 비워둘 수 없습니다.",
+                        "value": {"detail":english_cannot_be_empty}
+                    },
+                    "created_at_error": {
+                        "summary": "Created_At의 값이 올바르지 않습니다.",
+                        "value": {"detail":created_at_error}
+                    }
+                }
+            }
+        }
+    },
+    401: {
+        "description": "Unauthorized",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Unauthorized": {
+                        "summary": "인증 헤더값(Authorization)이(가) 필요합니다.",
+                        "value": {"detail":unauthorized}
+                    },
+                    "Revoked Token": {
+                        "summary": "취소된 엑세스 토큰이 입력되었습니다.",
+                        "value": {"detail":unauthorized_revoked}
+                    },
+                    "Invalid Token": {
+                        "summary": "엑세스 토큰이 올바르지 않습니다.",
+                        "value": {"detail":unauthorized_invaild}
+                    },
+                    "User Disabled": {
+                        "summary": "비활성화된 사용자의 엑세스 토큰이 사용되었습니다.",
+                        "value": {"detail":unauthorized_userdisabled}
+                    }
+                }
+            }
+        }             
+    },
+    404: {
+        "description": "Not Found",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Note Not Found": {
+                        "summary": "해당 사용자가 해당 시간에 쓴 노트는 존재하지 않습니다.",
+                        "value": {
+                            "detail": no_data_error
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+search_responses = {
+    200: {
+        "description": "Search successfully",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Search Successfully": {
+                        "summary": "조회에 성공했습니다.",
+                        "value": {
+                            "data": [        {
+                                "Author": "유저 고유 아이디",
+                                "English": "영어",
+                                "Korean": "한국어",
+                                "Speak": "발음",
+                                "Created_At": "노트가 등록된 시간"
+                            }]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    401: {
+        "description": "Unauthorized",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Unauthorized": {
+                        "summary": "인증 헤더값(Authorization)이(가) 필요합니다.",
+                        "value": {"detail":unauthorized}
+                    },
+                    "Revoked Token": {
+                        "summary": "취소된 엑세스 토큰이 입력되었습니다.",
+                        "value": {"detail":unauthorized_revoked}
+                    },
+                    "Invalid Token": {
+                        "summary": "엑세스 토큰이 올바르지 않습니다.",
+                        "value": {"detail":unauthorized_invaild}
+                    },
+                    "User Disabled": {
+                        "summary": "비활성화된 사용자의 엑세스 토큰이 사용되었습니다.",
+                        "value": {
+                            "detail":unauthorized_userdisabled\
+                        }
+                    }
+                }
+            }
+        }             
+    },
+    404: {
+        "description": "Not Found",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Note Not Found": {
+                        "summary": "데이터를 찾을수 없습니다.",
+                        "value": {
+                            "detail": no_data_error
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -141,7 +295,7 @@ async def add_note(note: NoteAdd, authorized: bool = Depends(verify_user_token))
         if(response.text == "\"Status Code : 200 | OK : Successfully added data \""):
             return json.loads('{"detail":"Note Added Successfully"}')
         
-@noteapi.post("/get_10")
+@noteapi.post("/get_10", responses=search_responses)
 async def get_10_note(page: NoteGetPer10,authorized: bool = Depends(verify_user_token)):
     if authorized:
         json_10 = json.loads(json.dumps(page.dict()))
@@ -155,9 +309,12 @@ async def get_10_note(page: NoteGetPer10,authorized: bool = Depends(verify_user_
         except requests.exceptions.RequestException as e:
             raise HTTPException(status_code=500, detail=str(e))
         
+        if len(json.loads(response.text)) == 0:
+            raise HTTPException(status_code=404, detail=no_data_error)
+        
         return(json.loads(response.text))
         
-@noteapi.get("/get_all")
+@noteapi.get("/get_all", responses=search_responses)
 async def get_all_note(authorized: bool = Depends(verify_user_token)):
     if authorized:
         try:
@@ -168,9 +325,12 @@ async def get_all_note(authorized: bool = Depends(verify_user_token)):
         except requests.exceptions.RequestException as e:
             raise HTTPException(status_code=500, detail=str(e))
         
-        return(json.loads(response.text))
+        if len(json.loads(response.text)) == 0:
+            raise HTTPException(status_code=404, detail=no_data_error)
 
-@noteapi.patch("/update")
+        return({"data":json.loads(response.text)})
+
+@noteapi.patch("/update", responses=update_responses)
 async def update_note(note: NoteUpdate, authorized: bool = Depends(verify_user_token)):
     if authorized:
         if note.Korean == "":
@@ -182,12 +342,15 @@ async def update_note(note: NoteUpdate, authorized: bool = Depends(verify_user_t
         notejson["Author"] = list(authorized)[1]
         notetime = note.Created_At.split(",")
         Created_At = {}
-        Created_At['year'] = int(notetime[0])
-        Created_At['month'] = int(notetime[1])
-        Created_At['day'] = int(notetime[2])
-        Created_At['hour'] = int(notetime[3])
-        Created_At['minute'] = int(notetime[4])
-        Created_At['second'] = int(notetime[5])
+        try:
+            Created_At['year'] = int(notetime[0])
+            Created_At['month'] = int(notetime[1])
+            Created_At['day'] = int(notetime[2])
+            Created_At['hour'] = int(notetime[3])
+            Created_At['minute'] = int(notetime[4])
+            Created_At['second'] = int(notetime[5])
+        except IndexError:
+            raise HTTPException(status_code=400, detail=created_at_error)
 
         notejson['Created_At'] = datetime.datetime(Created_At['year'],Created_At['month'],Created_At['day'],Created_At['hour'],Created_At['minute'],Created_At['second']).strftime("%Y-%m-%d %H:%M:%S")
         try:
@@ -199,7 +362,12 @@ async def update_note(note: NoteUpdate, authorized: bool = Depends(verify_user_t
         except requests.exceptions.RequestException as e:
             raise HTTPException(status_code=500, detail=str(e))
         
-
-        if(response.text == "\"Status Code : 200 | OK : Successfully Update data \""):
+        res = json.loads(response.text)
+        if(res['affectedRows'] == 1):
             return json.loads('{"detail":"Note Update Successfully"}')
-    
+
+        if(res['affectedRows'] >= 1):
+            return json.loads('{"detail":"WARNING: TWO OR MORE DATA CHANGED AT THE SAME TIME"}')
+        
+        if(res['affectedRows'] == 0):
+            raise HTTPException(status_code=404, detail=no_data_error)

@@ -38,7 +38,6 @@ try:
 
     Auth = Firebase(firebaseConfig).auth()
     Storage = Firebase(firebaseConfig).storage()
-
 except ModuleNotFoundError:
 
     os.system('pip install firebase')
@@ -215,6 +214,21 @@ token_verify_responses = {
 }
 
 token_revoke_responses = {
+    200: {
+        "description": "Token Revoked",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Added Successfully": {
+                        "summary": "Revoke Successfully",
+                        "value": {                                                        
+                            "detail": "Tokens revoked at: timestamp"
+                        }
+                    }
+                }
+            }
+        }
+    },
     400: {
         "description": "Bad Request",
         "content": {
@@ -264,7 +278,6 @@ class verify_token_res(BaseModel):
 
 class token_revoke(BaseModel):
     uid: str
-
 
 class token_revoke_res(BaseModel):
     detail: str
