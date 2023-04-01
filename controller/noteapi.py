@@ -213,7 +213,80 @@ search_responses = {
                     "User Disabled": {
                         "summary": "비활성화된 사용자의 엑세스 토큰이 사용되었습니다.",
                         "value": {
-                            "detail":unauthorized_userdisabled\
+                            "detail":unauthorized_userdisabled
+                        }
+                    }
+                }
+            }
+        }             
+    },
+    404: {
+        "description": "Not Found",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Note Not Found": {
+                        "summary": "데이터를 찾을수 없습니다.",
+                        "value": {
+                            "detail": no_data_error
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+delete_responses = {
+    200: {
+        "description": "Delete successfully",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Search Successfully": {
+                        "summary": "삭제에 성공했습니다.",
+                        "value": {
+                            "detail":"Note Delete Successfully"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    400: {
+        "description": "Bad Request",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "created_at_error": {
+                        "summary": "Created_At의 값이 올바르지 않습니다.",
+                        "value": {"detail":created_at_error}
+                    }
+                }
+            }
+        }
+    },
+    401: {
+        "description": "Unauthorized",
+        "content": {
+            "application/json": {
+                "examples": {
+                    "Unauthorized": {
+                        "summary": "인증 헤더값(Authorization)이(가) 필요합니다.",
+                        "value": {"detail":unauthorized}
+                    },
+                    "Revoked Token": {
+                        "summary": "취소된 엑세스 토큰이 입력되었습니다.",
+                        "value": {"detail":unauthorized_revoked}
+                    },
+                    "Invalid Token": {
+                        "summary": "엑세스 토큰이 올바르지 않습니다.",
+                        "value": {"detail":unauthorized_invaild}
+                    },
+                    "User Disabled": {
+                        "summary": "비활성화된 사용자의 엑세스 토큰이 사용되었습니다.",
+                        "value": {
+                            "detail":unauthorized_userdisabled
                         }
                     }
                 }
@@ -251,6 +324,8 @@ class NoteUpdate(BaseModel):
     Speak: Optional[str] = None
     Created_At: str
 
+class NoteDelete(BaseModel):
+    Created_At: str
 
 def verify_user_token(req: Request):
 
@@ -368,6 +443,44 @@ async def update_note(note: NoteUpdate, authorized: bool = Depends(verify_user_t
 
         if(res['affectedRows'] >= 1):
             return json.loads('{"detail":"WARNING: TWO OR MORE DATA CHANGED AT THE SAME TIME"}')
+        
+        if(res['affectedRows'] == 0):
+            raise HTTPException(status_code=404, detail=no_data_error)
+        
+@noteapi.delete("/delete", responses=delete_responses)
+async def delete_note(note: NoteDelete, authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        notetime = note.Created_At.split(",")
+        Created_At = {}
+        try:
+            Created_At['year'] = int(notetime[0])
+            Created_At['month'] = int(notetime[1])
+            Created_At['day'] = int(notetime[2])
+            Created_At['hour'] = int(notetime[3])
+            Created_At['minute'] = int(notetime[4])
+            Created_At['second'] = int(notetime[5])
+        except IndexError:
+            raise HTTPException(status_code=400, detail=created_at_error)
+
+        notejson = {}
+        notejson["Author"] = list(authorized)[1]
+        notejson["Created_At"] = datetime.datetime(Created_At['year'],Created_At['month'],Created_At['day'],Created_At['hour'],Created_At['minute'],Created_At['second']).strftime("%Y-%m-%d %H:%M:%S")
+
+        try:
+            response = requests.delete(
+                "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/delete",
+                json=notejson
+            )
+
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+        res = json.loads(response.text)
+        if(res['affectedRows'] == 1):
+            return json.loads('{"detail":"Note Delete Successfully"}')
+
+        if(res['affectedRows'] >= 1):
+            return json.loads('{"detail":"WARNING: TWO OR MORE DATA DELETED AT THE SAME TIME"}')
         
         if(res['affectedRows'] == 0):
             raise HTTPException(status_code=404, detail=no_data_error)
