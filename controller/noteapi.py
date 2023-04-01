@@ -6,6 +6,8 @@ import os
 from firebase_admin import auth
 import datetime
 
+from typing import Optional
+
 try:
     import requests
 except ModuleNotFoundError:
@@ -21,7 +23,6 @@ unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM
 korean_cannot_be_empty = {'code':'ER017','message':'KOREAN CANNOT BE EMPTY'}
 english_cannot_be_empty = {'code':'ER018','message':'ENGLISH CANNOT BE EMPTY'}
 
-#
 responses = {
     201: {
         "description": "Created successfully",
@@ -85,14 +86,15 @@ responses = {
 class NoteAdd(BaseModel):
     Korean: str
     English: str
-    Speak: str and None
+    Speak: Optional[str] = None
 
 class NoteGetPer10(BaseModel):
     Page: int
 
 class NoteUpdate(BaseModel):
-    key: str
-    value: str
+    Korean: str
+    English: str
+    Speak: Optional[str] = None
     Created_At: str
 
 
@@ -178,12 +180,22 @@ async def update_note(note: NoteUpdate, authorized: bool = Depends(verify_user_t
         
         notejson = json.loads(json.dumps(note.dict()))
         notejson["Author"] = list(authorized)[1]
-        notejson['Created_At'] = datetime.datetime(note.created_at)
+        notetime = note.Created_At.split(",")
+        Created_At = {}
+        Created_At['year'] = int(notetime[0])
+        Created_At['month'] = int(notetime[1])
+        Created_At['day'] = int(notetime[2])
+        Created_At['hour'] = int(notetime[3])
+        Created_At['minute'] = int(notetime[4])
+        Created_At['second'] = int(notetime[5])
+
+        notejson['Created_At'] = datetime.datetime(Created_At['year'],Created_At['month'],Created_At['day'],Created_At['hour'],Created_At['minute'],Created_At['second']).strftime("%Y-%m-%d %H:%M:%S")
         try:
             response = requests.patch(
                 "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/update",
                 json=notejson
             )
+
         except requests.exceptions.RequestException as e:
             raise HTTPException(status_code=500, detail=str(e))
         
