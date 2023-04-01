@@ -327,6 +327,9 @@ class NoteUpdate(BaseModel):
 class NoteDelete(BaseModel):
     Created_At: str
 
+class NoteSearchWithDate(BaseModel):
+    Created_At: str
+
 def verify_user_token(req: Request):
 
     try:
@@ -396,6 +399,32 @@ async def get_all_note(authorized: bool = Depends(verify_user_token)):
             response = requests.post(
                 "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/get_all",
                 json={"Author": list(authorized)[1]}
+            )
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+        if len(json.loads(response.text)) == 0:
+            raise HTTPException(status_code=404, detail=no_data_error)
+
+        return({"data":json.loads(response.text)})
+
+@noteapi.post("/get_date", responses=search_responses)
+async def get_all_note(note: NoteSearchWithDate, authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        notejson = json.loads(json.dumps(note.dict()))
+        notejson["Author"] = list(authorized)[1]
+        notetime = note.Created_At.split(",")
+        Created_At = {}
+        try:
+            Created_At['year'] = int(notetime[0])
+            Created_At['month'] = int(notetime[1])
+            Created_At['day'] = int(notetime[2])
+        except IndexError:
+            raise HTTPException(status_code=400, detail=created_at_error)
+        try:
+            response = requests.post(
+                "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/get_date",
+                json=notejson
             )
         except requests.exceptions.RequestException as e:
             raise HTTPException(status_code=500, detail=str(e))
