@@ -409,7 +409,7 @@ async def get_all_note(authorized: bool = Depends(verify_user_token)):
         return({"data":json.loads(response.text)})
 
 @noteapi.post("/get_date", responses=search_responses)
-async def get_all_note(note: NoteSearchWithDate, authorized: bool = Depends(verify_user_token)):
+async def get_all_note_with_Created_At(note: NoteSearchWithDate, authorized: bool = Depends(verify_user_token)):
     if authorized:
         notejson = json.loads(json.dumps(note.dict()))
         notejson["Author"] = list(authorized)[1]
