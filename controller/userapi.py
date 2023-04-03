@@ -282,6 +282,17 @@ class token_revoke(BaseModel):
 class token_revoke_res(BaseModel):
     detail: str
 
+class UserResetPWdata(BaseModel):
+    email: str
+
+class EmailVerify(BaseModel):
+    email: str
+
+class EmailSend(BaseModel):
+    title: str
+    content: str
+    email: str
+
 def verify_tokena(req: Request):
     token = req.headers["Authorization"]    
     try:
@@ -299,6 +310,16 @@ def verify_tokena(req: Request):
     except auth.InvalidIdTokenError:
         # Token is invalid
         raise HTTPException(status_code=401, detail="Unauthorized")
+
+def verify_admin_token(req: Request):
+
+    token = req.headers["Authorization"]
+    
+    if token == "Bearer cncztSAt9m4JYA9":
+        return True
+    else:
+        return False
+    
 
 @userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
 async def verify_token(token: verify_token):
@@ -386,6 +407,16 @@ async def user_login(userdata: UserLogindata):
     userjson['expires_in'] = currentuser['expiresIn']
     verify = await verify_token(userjson)
     if verify['email_verified'] == False:
+        """
+        res = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
+        message = res.replace("lang=en", "lang=ko")
+        msg = EmailMessage()
+        msg['Subject'] = '[ENote] 이메일을 인증하세요'
+        msg['From'] = "noreply.enote@gmail.com"
+        msg['To'] = email
+        msg.set_content("아래 링크를 클릭해서 이메일을 인증하세요.\n"+message)
+        s.send_message(msg)
+        """
         raise HTTPException(status_code=400, detail=Email_Not_Verified)
 
     return userjson
@@ -436,10 +467,10 @@ async def user_create(userdata: UserRegisterdata):
     res = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
     message = res.replace("lang=en", "lang=ko")
     msg = EmailMessage()
-    msg['Subject'] = '이메일을 인증하세요'
+    msg['Subject'] = '[ENote] 계정 이메일 인증'
     msg['From'] = "noreply.enote@gmail.com"
     msg['To'] = email
-    msg.set_content("아래 링크를 클릭해서 이메일을 인증하세요.\n"+message)
+    msg.set_content("해당 이메일로 ENote 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n"+message+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.")
 
     s.send_message(msg)
     try:
@@ -456,3 +487,71 @@ async def user_create(userdata: UserRegisterdata):
     
     raise HTTPException(status_code=500, detail=json.loads(c.text)['message'])
 
+@userapi.post("/resetpw")
+async def user_reset_password(userdata: UserResetPWdata):
+    email = userdata.email
+    try:
+        auth.get_user_by_email(email)
+    except _auth_utils.UserNotFoundError:
+        raise HTTPException(status_code=400, detail=User_NotFound)
+    except ValueError:
+        raise HTTPException(status_code=400, detail=Invaild_Email)
+    
+    rstlink = auth.generate_password_reset_link(email, action_code_settings=None, app=None)
+    rstlink = rstlink.replace("lang=en", "lang=ko")
+
+    rst = EmailMessage()
+    rst['Subject'] = '[ENote] 계정 비밀번호 변경'
+    rst['From'] = "noreply.enote@gmail.com"
+    rst['To'] = email
+    rst.set_content("ENote 계정 비밀번호 변경\n회원님께서는 ENote 계정의 비밀번호 변경을 요청하셨습니다.\n링크를 누르면 새로운 비밀번호를 설정하실 수 있습니다.\n\n"+rstlink+"\n\n회원님이 요청하신 것이 아니라면 이 메일을 무시하세요.")
+    
+    s.send_message(rst)
+
+    return rstlink
+
+@userapi.post("/verify_email")
+async def user_verify(userdata: EmailVerify, authorized: bool = Depends(verify_admin_token)):
+    if authorized:
+        email = userdata.email
+        try:
+            auth.get_user_by_email(email)
+        except _auth_utils.UserNotFoundError:
+            raise HTTPException(status_code=400, detail=User_NotFound)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=Invaild_Email)
+        
+        vlink = auth.generate_email_verification_link(email, action_code_settings=None, app=None)
+
+        ver = EmailMessage()
+        ver['Subject'] = '[ENote] 계정 이메일 인증'
+        ver['From'] = 'noreply.enote@gmail.com'
+        ver['To'] = email
+        ver.set_content("해당 이메일로 ENote 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+vlink+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.")
+
+        return {"detail":"Email Verification Link Sent"}
+    else:
+        raise HTTPException(status_code=401)
+
+@userapi.post("/send_email")
+async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verify_admin_token)):
+    if authorized:
+        email = userdata.email
+        try:
+            auth.get_user_by_email(email)
+        except _auth_utils.UserNotFoundError:
+            raise HTTPException(status_code=400, detail=User_NotFound)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=Invaild_Email)
+        
+        message = EmailMessage()
+        message['Subject'] = '[ENote] '+userdata.title
+        message['From'] = 'noreply.enote@gmail.com'
+        message['To'] = email
+        message.set_content(userdata.content)
+
+        s.send_message(message)
+
+        return {"detail":"Email Sent"}
+    else:
+        raise HTTPException(status_code=401)

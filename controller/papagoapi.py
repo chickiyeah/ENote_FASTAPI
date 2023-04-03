@@ -250,3 +250,6 @@ async def translate(text: TranslateValue, authorized: bool = Depends(verify_user
             )
 
             return {"text":str(json.loads(translang.text)['message']['result']['translatedText'])}
+        
+    else:
+        raise HTTPException(status_code=401, detail=unauthorized)

@@ -9,3 +9,7 @@ ScreenRoute = APIRouter(prefix="",tags=["Screens"])
 @ScreenRoute.get("/test")
 async def index(request: Request):
     return templates.TemplateResponse("test.html", {"request": request})
+
+@ScreenRoute.get("/")
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
