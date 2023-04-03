@@ -511,8 +511,7 @@ async def user_reset_password(userdata: UserResetPWdata):
     return rstlink
 
 @userapi.post("/verify_email")
-async def user_verify(userdata: EmailVerify, authorized: bool = Depends(verify_admin_token)):
-    if authorized:
+async def user_verify(userdata: EmailVerify):
         email = userdata.email
         try:
             auth.get_user_by_email(email)
@@ -530,8 +529,6 @@ async def user_verify(userdata: EmailVerify, authorized: bool = Depends(verify_a
         ver.set_content("해당 이메일로 ENote 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+vlink+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.")
 
         return {"detail":"Email Verification Link Sent"}
-    else:
-        raise HTTPException(status_code=401)
 
 @userapi.post("/send_email")
 async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verify_admin_token)):
