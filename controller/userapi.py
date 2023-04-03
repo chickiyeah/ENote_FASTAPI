@@ -471,8 +471,15 @@ async def user_create(userdata: UserRegisterdata):
     msg['From'] = "noreply.enote@gmail.com"
     msg['To'] = email
     msg.set_content("해당 이메일로 ENote 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n"+message+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.")
+    try:
+        s.send_message(msg)
+    except smtplib.SMTPServerDisconnected:
+        d = smtplib.SMTP("smtp.gmail.com", 587)
+        d.ehlo()
+        d.starttls()
+        d.login("noreply.enote", "iguffrrwnfhmocxt")
+        d.send_message(msg)
 
-    s.send_message(msg)
     try:
         c = requests.post(
             url = 'https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/user/add',
@@ -506,7 +513,14 @@ async def user_reset_password(userdata: UserResetPWdata):
     rst['To'] = email
     rst.set_content("ENote 계정 비밀번호 변경\n회원님께서는 ENote 계정의 비밀번호 변경을 요청하셨습니다.\n링크를 누르면 새로운 비밀번호를 설정하실 수 있습니다.\n\n"+rstlink+"\n\n회원님이 요청하신 것이 아니라면 이 메일을 무시하세요.")
     
-    s.send_message(rst)
+    try:
+        s.send_message(rst)
+    except smtplib.SMTPServerDisconnected:
+        d = smtplib.SMTP("smtp.gmail.com", 587)
+        d.ehlo()
+        d.starttls()
+        d.login("noreply.enote", "iguffrrwnfhmocxt")
+        d.send_message(rst)
 
     return rstlink
 
@@ -528,6 +542,15 @@ async def user_verify(userdata: EmailVerify):
         ver['To'] = email
         ver.set_content("해당 이메일로 ENote 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+vlink+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.")
 
+        try:
+            s.send_message(ver)
+        except smtplib.SMTPServerDisconnected:
+            d = smtplib.SMTP("smtp.gmail.com", 587)
+            d.ehlo()
+            d.starttls()
+            d.login("noreply.enote", "iguffrrwnfhmocxt")
+            d.send_message(ver)
+        
         return {"detail":"Email Verification Link Sent"}
 
 @userapi.post("/send_email")
@@ -547,7 +570,14 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
         message['To'] = email
         message.set_content(userdata.content)
 
-        s.send_message(message)
+        try:
+            s.send_message(message)
+        except smtplib.SMTPServerDisconnected:
+            d = smtplib.SMTP("smtp.gmail.com", 587)
+            d.ehlo()
+            d.starttls()
+            d.login("noreply.enote", "iguffrrwnfhmocxt")
+            d.send_message(message)
 
         return {"detail":"Email Sent"}
     else:
