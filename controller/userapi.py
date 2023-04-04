@@ -96,6 +96,11 @@ User_NotFound = {"code":"ER011", "message":"USER_NOT_FOUND"}
 
 Email_Not_Verified = {"code":"ER012", "message":"EMAIL_NOT_VERIFIED"}
 
+unauthorized = {'code':'ER013','message':'UNAUTHORIZED'}
+unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
+unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
+unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}
+
 Token_Revoke = {"code":"ER999", "message":"TOKEN REVOKED"}
 Invalid_Token = {"code":"ER998", "message":"INVALID TOKEN"}
 User_Disabled = {"code":"ER997", "message":"USER DISABLED"}
@@ -293,7 +298,31 @@ class EmailSend(BaseModel):
     content: str
     email: str
 
-def verify_tokena(req: Request):
+class UserLogoutdata(BaseModel):
+    access_token: str
+
+class UserFindiddata(BaseModel):
+    nickname: str
+
+async def verify_tokenb(req: str):
+    token = req   
+    try:
+        # Verify the ID token while checking if the token is revoked by
+        # passing check_revoked=True.
+        user = auth.verify_id_token(token, check_revoked=True)
+        # Token is valid and not revoked.
+        return True, user['uid']
+    except auth.RevokedIdTokenError:
+        # Token revoked, inform the user to reauthenticate or signOut().
+        raise HTTPException(status_code=401, detail=unauthorized_revoked)
+    except auth.UserDisabledError:
+        # Token belongs to a disabled user record.
+        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
+    except auth.InvalidIdTokenError:
+        # Token is invalid
+        raise HTTPException(status_code=401, detail=unauthorized_invaild)
+
+async def verify_tokena(req: Request):
     token = req.headers["Authorization"]    
     try:
         # Verify the ID token while checking if the token is revoked by
@@ -303,13 +332,13 @@ def verify_tokena(req: Request):
         return True
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=unauthorized_revoked)
     except auth.UserDisabledError:
         # Token belongs to a disabled user record.
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=unauthorized_userdisabled)
     except auth.InvalidIdTokenError:
         # Token is invalid
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=unauthorized_invaild)
 
 def verify_admin_token(req: Request):
 
@@ -348,8 +377,13 @@ async def verify_token(token: verify_token):
 @userapi.post("/revoke_token", response_model=token_revoke_res, responses=token_revoke_responses)
 async def revoke_token(token: token_revoke):
     try:
-        auth.revoke_refresh_tokens(token.uid)
-        user = auth.get_user(token.uid)
+        uid = token.access_token
+    except AttributeError as e:
+        uid = token
+
+    try:
+        auth.revoke_refresh_tokens(uid)
+        user = auth.get_user(uid)
         revocation = user.tokens_valid_after_timestamp / 1000
         return {"detail": 'Tokens revoked at: {0}'.format(revocation)}
     except _auth_utils.InvalidIdTokenError:
@@ -453,7 +487,32 @@ async def user_create(userdata: UserRegisterdata):
     except requests.exceptions.HTTPError as erra:
         #HTTP 에러가 발생한 경우
         #오류 가져오기 json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
-        raise HTTPException(status_code=400, detail=json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message'])
+        res = json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
+        if " : " in res:
+            res = res.split(" : ")[0]
+            if res == "INVALID_EMAIL":
+                raise HTTPException(status_code=400, detail=Invaild_Email)
+
+            if res == "INVALID_PASSWORD":
+                raise HTTPException(status_code=400, detail=Invaild_Password)
+
+            if res == "USER_DISABLED":
+                raise HTTPException(status_code=400, detail=User_Disabled)
+
+            if res == "EMAIL_EXISTS":
+                raise HTTPException(status_code=400, detail=Email_Exists)
+        else:
+            if res == "INVALID_EMAIL":
+                raise HTTPException(status_code=400, detail=Invaild_Email)
+
+            if res == "INVALID_PASSWORD":
+                raise HTTPException(status_code=400, detail=Invaild_Password)
+
+            if res == "USER_DISABLED":
+                raise HTTPException(status_code=400, detail=User_Disabled)
+            
+            if res == "EMAIL_EXISTS":
+                raise HTTPException(status_code=400, detail=Email_Exists)
 
     #유저의 고유 아이디 (UniqueID)
     id = a['localId']
@@ -470,7 +529,8 @@ async def user_create(userdata: UserRegisterdata):
     msg['Subject'] = '[ENote] 계정 이메일 인증'
     msg['From'] = "noreply.enote@gmail.com"
     msg['To'] = email
-    msg.set_content("해당 이메일로 ENote 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n"+message+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.")
+    msg.set_content("안녕하세요 ENote입니다.\n\n해당 이메일로 ENote 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+message+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 ENote 고객센터를 이용해 주시기 바랍니다.")
+    
     try:
         s.send_message(msg)
     except smtplib.SMTPServerDisconnected:
@@ -494,6 +554,48 @@ async def user_create(userdata: UserRegisterdata):
     
     raise HTTPException(status_code=500, detail=json.loads(c.text)['message'])
 
+@userapi.post('/logout')
+async def user_logout(userdata: UserLogoutdata):
+    auth = await verify_tokenb(userdata.access_token)
+    if auth:
+        print(auth)
+        res = await revoke_token(list(auth)[1])
+        return {"detail":"User Logout Successfully"}
+    else:
+        raise HTTPException(status_code=401, detail=unauthorized)
+
+@userapi.post("/findid")
+async def user_findid(userdata: UserFindiddata):
+    nick = userdata.nickname
+
+    data = {
+        "NickName":nick
+    }
+
+    try:
+        c = requests.post(
+            url = 'https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/user/findid',
+            json=data
+        )
+    except requests.exceptions.RequestException as erra:
+        raise HTTPException(status_code=500, detail=str(erra))
+    
+    emails = json.loads(c.text)
+
+    resemails = {}
+    resemails["data"] = []
+    for email in emails:
+        originmail = email['email'].split("@")
+        ldiff = originmail[0][0:round(len(originmail[0])/2)] +""+ str("*"*(len(originmail[0])-round(len(originmail[0])/2)))
+        rdiff = originmail[1][0:round(len(originmail[0])/2)] +""+ str("*"*(len(originmail[1])-round(len(originmail[0])/2)))
+        resemails["data"].append({"email":ldiff+"@"+rdiff})
+
+    resemails["amount"] = len(resemails["data"])
+    
+    return resemails
+
+
+
 @userapi.post("/resetpw")
 async def user_reset_password(userdata: UserResetPWdata):
     email = userdata.email
@@ -511,7 +613,7 @@ async def user_reset_password(userdata: UserResetPWdata):
     rst['Subject'] = '[ENote] 계정 비밀번호 변경'
     rst['From'] = "noreply.enote@gmail.com"
     rst['To'] = email
-    rst.set_content("ENote 계정 비밀번호 변경\n회원님께서는 ENote 계정의 비밀번호 변경을 요청하셨습니다.\n링크를 누르면 새로운 비밀번호를 설정하실 수 있습니다.\n\n"+rstlink+"\n\n회원님이 요청하신 것이 아니라면 이 메일을 무시하세요.")
+    rst.set_content("안녕하세요 ENote입니다.\n\n회원님께서는 ENote 계정의 비밀번호 변경을 요청하셨습니다.\n링크를 누르면 새로운 비밀번호를 설정하실 수 있습니다.\n\n"+rstlink+"\n\n회원님이 요청하신 것이 아니라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 ENote 고객센터를 이용해 주시기 바랍니다.")
     
     try:
         s.send_message(rst)
@@ -540,7 +642,7 @@ async def user_verify(userdata: EmailVerify):
         ver['Subject'] = '[ENote] 계정 이메일 인증'
         ver['From'] = 'noreply.enote@gmail.com'
         ver['To'] = email
-        ver.set_content("해당 이메일로 ENote 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+vlink+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.")
+        ver.set_content("안녕하세요 ENote입니다.\n\n해당 이메일로 ENote 사이트에 가입되어 이메일 인증이 필요합니다.\n아래 링크를 클릭해서 이메일 인증을 완료할 수 있습니다.\n\n"+vlink+"\n\n만약 본인이 가입하지 않은거라면 이 메일을 무시하세요.\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 ENote 고객센터를 이용해 주시기 바랍니다.")
 
         try:
             s.send_message(ver)
@@ -568,7 +670,7 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
         message['Subject'] = '[ENote] '+userdata.title
         message['From'] = 'noreply.enote@gmail.com'
         message['To'] = email
-        message.set_content(userdata.content)
+        message.set_content(userdata.content+"\n\n\n※ 본 메일은 발신 전용 메일이며, 자세한 문의사항은 ENote 고객센터를 이용해 주시기 바랍니다.")
 
         try:
             s.send_message(message)
@@ -581,4 +683,4 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
 
         return {"detail":"Email Sent"}
     else:
-        raise HTTPException(status_code=401)
+        raise HTTPException(status_code=401, detail=unauthorized)
