@@ -314,6 +314,7 @@ class NoteAdd(BaseModel):
     Korean: str
     English: str
     Speak: Optional[str] = None
+    Category: Optional[str] = None
 
 class NoteGetPer10(BaseModel):
     Page: int
@@ -323,6 +324,7 @@ class NoteUpdate(BaseModel):
     English: str
     Speak: Optional[str] = None
     Created_At: str
+    Category: Optional[str] = None
 
 class NoteDelete(BaseModel):
     Created_At: str
