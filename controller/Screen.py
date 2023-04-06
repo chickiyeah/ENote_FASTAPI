@@ -18,7 +18,7 @@ async def header(request: Request):
 async def footer(request: Request):
     return templates.TemplateResponse("footer.html", {"request": request})
 
-@ScreenRoute.get("/login")
+@ScreenRoute.get("/register")
 async def login(request: Request):
     return templates.TemplateResponse("join.html", {"request": request})
 
@@ -49,6 +49,10 @@ async def mypage(request: Request):
 @ScreenRoute.get("/mypage/unregister")
 async def unregister(request: Request):
     return templates.TemplateResponse("secession.html", {"request": request})
+
+@ScreenRoute.get("/calender")
+async def calender(request: Request):
+    return templates.TemplateResponse("calendar.html", {"request": request})
 
 @ScreenRoute.get("/robots.txt", response_class=PlainTextResponse)
 async def robots(request: Request):

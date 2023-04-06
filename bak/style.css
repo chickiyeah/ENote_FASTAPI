@@ -1,46 +1,6 @@
 @charset "UTF-8";
 
 /*==========================
-토글 js
-============================*/
-nav .profile {
-    position: relative;
-}
-
-nav .profile>.profile-hide {
-    position: absolute;
-    top: 30px;
-    right: 40px;
-    padding: 20px 45px;
-    border: 1px solid #ccc;
-    background: #fff;
-    border-radius: 20px;
-}
-
-nav .profile>.profile-hide::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100px;
-    height: 60px;
-    padding: 20px;
-    z-index: -10;
-}
-
-nav .profile>.profile-hide li>a {
-    font-size: 12px;
-}
-
-nav .profile>.profile-hide li>a:hover {
-    font-weight: 600;
-}
-
-nav .profile>.profile-hide li:not(:last-child) {
-    margin-bottom: 6px;
-}
-
-/*==========================
 header
 ============================*/
 header {
@@ -61,22 +21,22 @@ header h1 a {
 }
 
 header nav,
-header nav>ul {
+header nav ul {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-header nav>ul li a {
+header nav ul li a {
     font-size: 14px;
     font-weight: 500;
 }
 
-header nav>ul li:not(:last-child) {
+header nav ul li:not(:last-child) {
     margin-right: 90px;
 }
 
-header nav>ul li:last-child {
+header nav ul li:last-child {
     margin-right: 200px;
 }
 
@@ -88,7 +48,7 @@ header nav .profile {
     background: #ccc;
 }
 
-header nav .profile p>a {
+header nav .profile p {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -100,26 +60,23 @@ header nav .profile p>a {
 공통
 ============================*/
 .container {
-    max-width: 1108px;
+    max-width: 1140px;
     margin: auto;
-    padding-left: 16px;
-    padding-right: 16px;
 }
 
 /*==========================
 main
 ============================*/
 
-main {}
+main {
+    border-bottom: 1px solid #ccc;
+}
 
 main .container {
-    /* padding: 116px 80px; */
-    padding: 116px 0;
+    padding: 116px 80px;
 }
 
 main .input-group {
-    width: 80%;
-    margin: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -133,8 +90,6 @@ main .input-group .input-box {
 
 main .input-group .input-box label {
     width: 100%;
-    width: 56px;
-    display: inline-block;
     font-size: 16px;
     font-weight: 300;
     margin-right: 80px;
@@ -146,12 +101,11 @@ main .input-group .input-box:not(:last-child) {
 }
 
 main .input-group .input-box input {
-    width: 70%;
+    width: 60%;
     border: 1px solid #ccc;
     padding: 22px 34px;
     border-radius: 20px;
     outline: 0;
-    padding-left: 10px;
 }
 
 main .input-group .input-box input::placeholder {
@@ -161,8 +115,6 @@ main .input-group .input-box input::placeholder {
 }
 
 main .btn-group {
-    width: 70%;
-    margin: auto;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -191,7 +143,6 @@ main .btn-group button:last-child {
 footer
 ============================*/
 footer {
-    border-top: 1px solid #ccc;
     padding: 44px 0;
 }
 
