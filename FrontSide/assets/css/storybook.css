@@ -1,0 +1,86 @@
+@charset "UTF-8";
+
+/*==========================
+토글 js
+============================*/
+main .storybook-group .storybook-box .bg {
+    position: relative;
+}
+
+main .storybook-group .storybook-box .bg a>.story-hide {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    padding: 20px 40px;
+}
+
+main .storybook-group .storybook-box .bg a>.story-hide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    padding: 20px;
+    z-index: -10;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 20px;
+}
+
+main .storybook-group .storybook-box .bg a>.story-hide li {
+    font-size: 12px;
+}
+
+main .storybook-group .storybook-box .bg a>.story-hide li:hover {
+    font-weight: 600;
+}
+
+main .storybook-group .storybook-box .bg a>.story-hide li:not(:last-child) {
+    margin-bottom: 6px;
+}
+
+/*==========================
+공통
+============================*/
+main .container {
+    max-width: 1108px;
+    margin: auto;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+/* main .storybook-group {
+    padding: 100px 0;
+} */
+
+main .storybook-group .storybook-box:not(:last-child) {
+    margin-bottom: 28px;
+}
+
+main .storybook-group .storybook-box .bg {
+    position: relative;
+    max-width: 750px;
+    height: 150px;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+main .storybook-group .storybook-box .bg p a {
+    position: absolute;
+    top: 50%;
+    left: 36px;
+    transform: translateY(-50%);
+    font-size: 20px;
+    font-weight: 500;
+}
+
+main .storybook-group .storybook-box .bg a>i {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+}

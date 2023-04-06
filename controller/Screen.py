@@ -6,17 +6,49 @@ templates = Jinja2Templates(directory="FrontSide/templates")
 
 ScreenRoute = APIRouter(prefix="",tags=["Screens"])
 
-@ScreenRoute.get("/test")
-async def index(request: Request):
-    return templates.TemplateResponse("main.html", {"request": request})
-
-@ScreenRoute.get("/test_i")
-async def index(request: Request):
-    return templates.TemplateResponse("index-test.html", {"request": request})
-
 @ScreenRoute.get("/")
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+@ScreenRoute.get("/header")
+async def header(request: Request):
+    return templates.TemplateResponse("header.html", {"request": request})
+
+@ScreenRoute.get("/footer")
+async def footer(request: Request):
+    return templates.TemplateResponse("footer.html", {"request": request})
+
+@ScreenRoute.get("/login")
+async def login(request: Request):
+    return templates.TemplateResponse("join.html", {"request": request})
+
+@ScreenRoute.get("/storybook")
+async def story(request: Request):
+    return templates.TemplateResponse("storybook.html", {"request": request})
+
+@ScreenRoute.get("/storybook/detail")
+async def story(request: Request):
+    return templates.TemplateResponse("storybook_detail.html", {"request": request})
+
+@ScreenRoute.get("/word")
+async def word(request: Request):
+    return templates.TemplateResponse("word.html", {"request": request})
+
+@ScreenRoute.get("/word/success")
+async def word_success(request: Request):
+    return templates.TemplateResponse("word_success.html", {"request": request})
+
+@ScreenRoute.get("/word/failure")
+async def word_failure(request: Request):
+    return templates.TemplateResponse("word_failed.html", {"request": request})
+
+@ScreenRoute.get("/mypage")
+async def mypage(request: Request):
+    return templates.TemplateResponse("account.html", {"request": request})
+
+@ScreenRoute.get("/mypage/unregister")
+async def unregister(request: Request):
+    return templates.TemplateResponse("secession.html", {"request": request})
 
 @ScreenRoute.get("/robots.txt", response_class=PlainTextResponse)
 async def robots(request: Request):

@@ -332,6 +332,26 @@ class NoteDelete(BaseModel):
 class NoteSearchWithDate(BaseModel):
     Created_At: str
 
+class NoteSearchWithDate_10(BaseModel):
+    Created_At: str
+    Page: int
+
+class NoteSearchWithCategory(BaseModel):
+    Category: str
+
+class NoteSearchWithCategory_10(BaseModel):
+    Category: str
+    Page: int
+
+class NoteSearchWithDate_Category(BaseModel):
+    Created_At: str
+    Category: str
+
+class NoteSearchWithDate_Category_10(BaseModel):
+    Created_At: str
+    Category: str
+    Page: int
+
 def verify_user_token(req: Request):
 
     try:
@@ -353,7 +373,7 @@ def verify_user_token(req: Request):
     except KeyError:
         raise HTTPException(status_code=401, detail=unauthorized)
     
-@noteapi.post("/add", responses=responses, status_code=201)
+@noteapi.post("/add", responses=responses, status_code=201) # 노트 추가 (201 반환)
 async def add_note(note: NoteAdd, authorized: bool = Depends(verify_user_token)):
     if authorized:
         if note.Korean == "":
@@ -375,7 +395,7 @@ async def add_note(note: NoteAdd, authorized: bool = Depends(verify_user_token))
         if(response.text == "\"Status Code : 200 | OK : Successfully added data \""):
             return json.loads('{"detail":"Note Added Successfully"}')
         
-@noteapi.post("/get_10", responses=search_responses)
+@noteapi.post("/get_10", responses=search_responses) # 10개의 노트만 가져오기
 async def get_10_note(page: NoteGetPer10,authorized: bool = Depends(verify_user_token)):
     if authorized:
         json_10 = json.loads(json.dumps(page.dict()))
@@ -394,7 +414,7 @@ async def get_10_note(page: NoteGetPer10,authorized: bool = Depends(verify_user_
         
         return(json.loads(response.text))
         
-@noteapi.get("/get_all", responses=search_responses)
+@noteapi.get("/get_all", responses=search_responses) # 모든 노트 가져오기
 async def get_all_note(authorized: bool = Depends(verify_user_token)):
     if authorized:
         try:
@@ -410,7 +430,34 @@ async def get_all_note(authorized: bool = Depends(verify_user_token)):
 
         return({"data":json.loads(response.text)})
 
-@noteapi.post("/get_date", responses=search_responses)
+@noteapi.post("/get_date_10", responses=search_responses) # 작성 날짜를 기준으로 10개의 노트 가져오기
+async def get_date_10_note(note: NoteSearchWithDate_10, authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        notejson = json.loads(json.dumps(note.dict()))
+        notejson["Author"] = list(authorized)[1]
+        notejson["Page"] = notejson["Page"] - 1
+        notetime = note.Created_At.split(",")
+        Created_At = {}
+        try:
+            Created_At['year'] = int(notetime[0])
+            Created_At['month'] = int(notetime[1])
+            Created_At['day'] = int(notetime[2])
+        except IndexError:
+            raise HTTPException(status_code=400, detail=created_at_error)
+        try:
+            response = requests.post(
+                "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/get_date_10",
+                json=notejson
+            )
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+        if len(json.loads(response.text)) == 0:
+            raise HTTPException(status_code=404, detail=no_data_error)
+
+        return({"data":json.loads(response.text)})
+
+@noteapi.post("/get_date", responses=search_responses) # 작성 날짜를 기준으로 모든 노트 가져오기
 async def get_all_note_with_Created_At(note: NoteSearchWithDate, authorized: bool = Depends(verify_user_token)):
     if authorized:
         notejson = json.loads(json.dumps(note.dict()))
@@ -435,8 +482,114 @@ async def get_all_note_with_Created_At(note: NoteSearchWithDate, authorized: boo
             raise HTTPException(status_code=404, detail=no_data_error)
 
         return({"data":json.loads(response.text)})
+    
+@noteapi.post("/get_date_cate_10", responses=search_responses)
+async def get_date_cate_10(note:NoteSearchWithDate_Category_10, authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        notejson = json.loads(json.dumps(note.dict()))
+        notejson["Author"] = list(authorized)[1]
+        notejson["Page"] = notejson["Page"] - 1
+        notetime = note.Created_At.split(",")
+        Created_At = {}
+        try:
+            Created_At['year'] = int(notetime[0])
+            Created_At['month'] = int(notetime[1])
+            Created_At['day'] = int(notetime[2])
+        except IndexError:
+            raise HTTPException(status_code=400, detail=created_at_error)
+        try:
+            response = requests.post(
+                "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/get_date_cate_10",
+                json=notejson
+            )
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+        if len(json.loads(response.text)) == 0:
+            raise HTTPException(status_code=404, detail=no_data_error)
 
-@noteapi.patch("/update", responses=update_responses)
+        return({"data":json.loads(response.text)})
+
+@noteapi.post("/get_date_cate", responses=search_responses)
+async def get_date_cate(note:NoteSearchWithDate_Category, authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        notejson = json.loads(json.dumps(note.dict()))
+        notejson["Author"] = list(authorized)[1]
+        notetime = note.Created_At.split(",")
+        Created_At = {}
+        try:
+            Created_At['year'] = int(notetime[0])
+            Created_At['month'] = int(notetime[1])
+            Created_At['day'] = int(notetime[2])
+        except IndexError:
+            raise HTTPException(status_code=400, detail=created_at_error)
+        try:
+            response = requests.post(
+                "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/get_date_cate",
+                json=notejson
+            )
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+        if len(json.loads(response.text)) == 0:
+            raise HTTPException(status_code=404, detail=no_data_error)
+
+        return({"data":json.loads(response.text)})
+
+@noteapi.post("/get_cate_10", responses=search_responses)
+async def get_cate_10(note:NoteSearchWithCategory_10, authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        notejson = json.loads(json.dumps(note.dict()))
+        notejson["Author"] = list(authorized)[1]
+        notejson["Page"] = notejson["Page"] - 1
+        notetime = note.Created_At.split(",")
+        Created_At = {}
+        try:
+            Created_At['year'] = int(notetime[0])
+            Created_At['month'] = int(notetime[1])
+            Created_At['day'] = int(notetime[2])
+        except IndexError:
+            raise HTTPException(status_code=400, detail=created_at_error)
+        try:
+            response = requests.post(
+                "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/get_cate_10",
+                json=notejson
+            )
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+        if len(json.loads(response.text)) == 0:
+            raise HTTPException(status_code=404, detail=no_data_error)
+
+        return({"data":json.loads(response.text)})
+
+@noteapi.post("/get_cate", responses=search_responses)
+async def get_cate(note:NoteSearchWithCategory, authorized: bool = Depends(verify_user_token)):
+    if authorized:
+        notejson = json.loads(json.dumps(note.dict()))
+        notejson["Author"] = list(authorized)[1]
+        notetime = note.Created_At.split(",")
+        Created_At = {}
+        try:
+            Created_At['year'] = int(notetime[0])
+            Created_At['month'] = int(notetime[1])
+            Created_At['day'] = int(notetime[2])
+        except IndexError:
+            raise HTTPException(status_code=400, detail=created_at_error)
+        try:
+            response = requests.post(
+                "https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/note/get_cate",
+                json=notejson
+            )
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+        if len(json.loads(response.text)) == 0:
+            raise HTTPException(status_code=404, detail=no_data_error)
+
+        return({"data":json.loads(response.text)})
+
+@noteapi.patch("/update", responses=update_responses) # 노트 업데이트
 async def update_note(note: NoteUpdate, authorized: bool = Depends(verify_user_token)):
     if authorized:
         if note.Korean == "":
@@ -478,7 +631,7 @@ async def update_note(note: NoteUpdate, authorized: bool = Depends(verify_user_t
         if(res['affectedRows'] == 0):
             raise HTTPException(status_code=404, detail=no_data_error)
         
-@noteapi.delete("/delete", responses=delete_responses)
+@noteapi.delete("/delete", responses=delete_responses) # 노트 삭제
 async def delete_note(note: NoteDelete, authorized: bool = Depends(verify_user_token)):
     if authorized:
         notetime = note.Created_At.split(",")
