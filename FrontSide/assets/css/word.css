@@ -34,7 +34,7 @@ main .word-group .word-box .bg p {
     position: absolute;
     top: 40%;
     left: 50%;
-    transform: translate(-40%, -50%);
+    transform: translate(-50%, -40%);
     font-size: 40px;
     font-weight: 700;
 }

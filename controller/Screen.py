@@ -22,6 +22,10 @@ async def footer(request: Request):
 async def login(request: Request):
     return templates.TemplateResponse("join.html", {"request": request})
 
+@ScreenRoute.get("/login")
+async def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
 @ScreenRoute.get("/storybook")
 async def story(request: Request):
     return templates.TemplateResponse("storybook.html", {"request": request})
