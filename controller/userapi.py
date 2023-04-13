@@ -430,10 +430,12 @@ async def user_login(userdata: UserLogindata):
                 raise HTTPException(status_code=400, detail=User_Disabled)
 
     currentuser = Auth.current_user
+    print(datetime.datetime.now())
     user = requests.post(
         url='https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/user/get',
         json={'Id':currentuser['localId']}
     )
+    print(datetime.datetime.now())
     user.encoding = "UTF-8"
     userjson = json.loads(user.text)
     userjson['access_token'] = currentuser['idToken']
