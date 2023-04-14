@@ -322,6 +322,7 @@ async def verify_tokenb(req: str):
         # Token is invalid
         raise HTTPException(status_code=401, detail=unauthorized_invaild)
 
+
 async def verify_tokena(req: Request):
     token = req.headers["Authorization"]    
     try:
@@ -349,7 +350,6 @@ def verify_admin_token(req: Request):
     else:
         return False
     
-
 @userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
 async def verify_token(token: verify_token):
 
@@ -457,6 +457,7 @@ async def user_login(userdata: UserLogindata):
 
     return userjson
 #.
+
 @userapi.post("/register", response_model=RegisterResponse, responses=register_responses, status_code=201)
 async def user_create(userdata: UserRegisterdata):
     now = datetime.datetime.now()

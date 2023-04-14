@@ -1,115 +1,101 @@
-function prevMonth(date) {
-  var target = new Date(date);
-  target.setDate(1);
-  target.setMonth(target.getMonth() - 1);
+(function () {
+  calendarMaker($("#calendarForm"), new Date());
+})();
 
-  return getYmd(target);
-}
-
-function nextMonth(date) {
-  var target = new Date(date);
-  target.setDate(1);
-  target.setMonth(target.getMonth() + 1);
-
-  return getYmd(target);
-}
-
-function getYmd(target) {
-  // IE에서 날짜 문자열에 0이 없으면 인식 못함
-  var month = ("0" + (target.getMonth() + 1)).slice(-2);
-  return [target.getFullYear(), month, "01"].join("-");
-}
-
-function fullDays(date) {
-  var target = new Date(date);
-  var year = target.getFullYear();
-  var month = target.getMonth();
-
-  var firstWeekDay = new Date(year, month, 1).getDay();
-  var thisDays = new Date(year, month + 1, 0).getDate();
-
-  // 월 표시 달력이 가지는 셀 갯수는 3가지 가운데 하나이다.
-  // var cell = [28, 35, 42].filter(n => n >= (firstWeekDay + thisDays)).shift();
-  var cell = [28, 35, 42]
-    .filter(function (n) {
-      return n >= firstWeekDay + thisDays;
-    })
-    .shift();
-
-  // 셀 초기화, IE에서 Array.fill()을 지원하지 않아서 변경
-  // var days = new Array(cell).fill({date: '', dayNum: '', today: false});
-  var days = [];
-  for (var i = 0; i < cell; i++) {
-    days[i] = {
-      date: "",
-      dayNum: "",
-      today: false,
-    };
+var nowDate = new Date();
+function calendarMaker(target, date) {
+  if (date == null || date == undefined) {
+    date = new Date();
+  }
+  nowDate = date;
+  if ($(target).length > 0) {
+    var year = nowDate.getFullYear();
+    var month = nowDate.getMonth() + 1;
+    $(target).empty().append(assembly(year, month));
+  } else {
+    console.error("custom_calendar Target is empty!!!");
+    return;
   }
 
-  var now = new Date();
-  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  var inDate;
-  for (var index = firstWeekDay, i = 1; i <= thisDays; index++, i++) {
-    inDate = new Date(year, month, i);
-    days[index] = {
-      date: i,
-      dayNum: inDate.getDay(),
-      today: inDate.getTime() === today.getTime(),
-    };
+  var thisMonth = new Date(nowDate.getFullYear(), nowDate.getMonth(), 1);
+  var thisLastDay = new Date(nowDate.getFullYear(), nowDate.getMonth() + 1, 0);
+
+  var tag = "<tr>";
+  var cnt = 0;
+  //빈 공백 만들어주기
+  for (i = 0; i < thisMonth.getDay(); i++) {
+    tag += "<td></td>";
+    cnt++;
   }
 
-  return days;
-}
+  //날짜 채우기
+  for (i = 1; i <= thisLastDay.getDate(); i++) {
+    if (cnt % 7 == 0) {
+      tag += "<tr>";
+    }
 
-function drawMonth(date) {
-  $("#month-this").text(date.substring(0, 7).replace("-", "."));
-  $("#month-prev").data("ym", prevMonth(date));
-  $("#month-next").data("ym", nextMonth(date));
+    tag += "<td>" + i + "</td>";
+    cnt++;
+    if (cnt % 7 == 0) {
+      tag += "</tr>";
+    }
+  }
+  $(target).find("#custom_set_date").append(tag);
+  calMoveEvtFn();
 
-  $("#tbl-month").empty();
+  function assembly(year, month) {
+    var calendar_html_code =
+      "<table class='custom_calendar_table'>" +
+      "<colgroup>" +
+      "<col style='width:81px'/>" +
+      "<col style='width:81px'/>" +
+      "<col style='width:81px'/>" +
+      "<col style='width:81px'/>" +
+      "<col style='width:81px'/>" +
+      "<col style='width:81px'/>" +
+      "<col style='width:81px'/>" +
+      "</colgroup>" +
+      "<thead class='cal_date'>" +
+      "<th><button type='button' class='prev'><</button></th>" +
+      "<th colspan='5'><p><span>" +
+      year +
+      "</span>년 <span>" +
+      month +
+      "</span>월</p></th>" +
+      "<th><button type='button' class='next'>></button></th>" +
+      "</thead>" +
+      "<thead  class='cal_week'>" +
+      "<th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th>" +
+      "</thead>" +
+      "<tbody id='custom_set_date'>" +
+      "</tbody>" +
+      "</table>";
+    return calendar_html_code;
+  }
 
-  var td = '<td class="__REST__ __TODAY__"><a __HREF__>__DATE__</a></td>';
-  var href = "/depart/schedule?date=" + date.substring(0, 8);
-  var hasEvent;
-  var tdClass;
-  var week = null;
-  var days = fullDays(date);
-  for (var i = 0, length = days.length; i < length; i += 7) {
-    // 전체 셀을 주단위로 잘라서 사용
-    week = days.slice(i, i + 7);
-
-    var $tr = $("<tr></tr>");
-    week.forEach(function (obj, index) {
-      // 매주 수요일에 이벤트가 있다고 가정
-      hasEvent = index === 3;
-      tdClass = index === 0 ? "sun" : "";
-      tdClass = index === 6 ? "sat" : tdClass;
-
-      $tr.append(
-        td
-          .replace("__REST__", tdClass)
-          .replace("__TODAY__", obj["today"] ? "today" : "")
-          .replace(
-            "__HREF__",
-            hasEvent
-              ? 'href="' + href + ("0" + obj["date"]).slice(-2) + '"'
-              : ""
-          )
-          .replace("__DATE__", obj["date"])
+  function calMoveEvtFn() {
+    //전달 클릭
+    $(".custom_calendar_table").on("click", ".prev", function () {
+      nowDate = new Date(
+        nowDate.getFullYear(),
+        nowDate.getMonth() - 1,
+        nowDate.getDate()
       );
+      calendarMaker($(target), nowDate);
     });
-    $("#tbl-month").append($tr);
+    //다음날 클릭
+    $(".custom_calendar_table").on("click", ".next", function () {
+      nowDate = new Date(
+        nowDate.getFullYear(),
+        nowDate.getMonth() + 1,
+        nowDate.getDate()
+      );
+      calendarMaker($(target), nowDate);
+    });
+    //일자 선택 클릭
+    $(".custom_calendar_table").on("click", "td", function () {
+      $(".custom_calendar_table .select_day").removeClass("select_day");
+      $(this).removeClass("select_day").addClass("select_day");
+    });
   }
 }
-
-$(function () {
-  var date = new Date().toISOString().substring(0, 10);
-  drawMonth(date);
-
-  $(".month-move").on("click", function (e) {
-    e.preventDefault();
-
-    drawMonth($(this).data("ym"));
-  });
-});

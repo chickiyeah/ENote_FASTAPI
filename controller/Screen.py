@@ -54,7 +54,7 @@ async def mypage(request: Request):
 async def unregister(request: Request):
     return templates.TemplateResponse("secession.html", {"request": request})
 
-@ScreenRoute.get("/calender")
+@ScreenRoute.get("/calendar")
 async def calender(request: Request):
     return templates.TemplateResponse("calendar.html", {"request": request})
 

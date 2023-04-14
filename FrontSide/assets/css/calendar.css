@@ -3,40 +3,55 @@
 /*==========================
 공통
 ============================*/
-main .container {
-    max-width: 1108px;
-    margin: auto;
-    padding-left: 16px;
-    padding-right: 16px;
+* {
+    margin: 0;
+    padding: 0
 }
 
-main .date-wrap .date-month {
+.custom_calendar_table td {
     text-align: center;
+}
+
+.custom_calendar_table thead.cal_date th {
+    font-size: 1.5rem;
+}
+
+.custom_calendar_table thead.cal_date th button {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+}
+
+.custom_calendar_table thead.cal_week th {
+    color: #000;
+}
+
+.custom_calendar_table tbody td {
+    cursor: pointer;
+    padding-bottom: 30px;
+    line-height: 50px;
+}
+
+.custom_calendar_table tbody td:nth-child(1) {
+    color: red;
+}
+
+.custom_calendar_table tbody td:nth-child(7) {
+    color: #288CFF;
+}
+
+.custom_calendar_table tbody td.select_day {
+    text-align: center;
+    background-color: #fcf31d;
+    border-radius: 50%;
+    outline-offset: 3.2px;
+    outline: #0ca0fd solid 2px;
+}
+
+#calendarForm {
+    margin: 100px 0;
+}
+
+.custom_calendar_table {
     margin: auto;
-}
-
-main .date-wrap .date-month>span,
-main .date-wrap .button_wrap>button {
-    font-size: 30px;
-    margin-bottom: 30px;
-}
-
-main .date-wrap .date-month thead {
-    margin-bottom: 20px;
-}
-
-main .date-wrap .date-month thead tr th {
-    font-size: 20px;
-}
-
-main .date-wrap .date-month thead tr th:not(:last-child) {
-    padding-right: 100px;
-}
-
-main .date-wrap .date-month tbody tr td a {
-    margin-bottom: 80px;
-}
-
-main .date-wrap .date-month tbody tr td:not(:last-child) {
-    padding-right: 100px;
 }
