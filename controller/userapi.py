@@ -571,6 +571,12 @@ async def user_create(userdata: UserRegisterdata):
         d.starttls()
         d.login("noreply.enote", "iguffrrwnfhmocxt")
         d.send_message(msg)
+    except smtplib.SMTPSenderRefused:
+        d = smtplib.SMTP("smtp.gmail.com", 587)
+        d.ehlo()
+        d.starttls()
+        d.login("noreply.enote", "iguffrrwnfhmocxt")
+        d.send_message(msg)        
 
     try:
         c = requests.post(
