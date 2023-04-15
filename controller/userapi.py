@@ -365,10 +365,14 @@ async def refresh_token(token: refresh_token):
         refreshtoken = token['refresh_token']
 
     try:
-        res = Auth.refresh(refreshtoken)
-        return res
+        currentuser = Auth.refresh(refreshtoken)
+        userjson = {}
+        userjson['id'] = currentuser['userId']
+        userjson['access_token'] = currentuser['idToken']
+        userjson['refresh_token'] = currentuser['refreshToken']  
+        return userjson
     except HTTPException as e:
-        raise HTTPException(400)
+        raise HTTPException(500)
 
 @userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
 async def verify_token(token: verify_token):
