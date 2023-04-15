@@ -101,6 +101,10 @@ unauthorized_revoked = {'code':'ER014','message':'UNAUTHORIZED (REVOKED TOKEN)'}
 unauthorized_invaild = {'code':'ER015','message':'UNAUTHORIZED (TOKEN INVALID)'}
 unauthorized_userdisabled = {'code':'ER016','message':'UNAUTHORIZED (TOKENS FROM DISABLED USERS)'}
 
+Nickname_cantuse = {'code':'ER017','message':'Nickname Cant Contain "removed"'}
+
+email_provider_error = {'code':'ER018','message':'Unable to sign up using this email provider'}
+
 Token_Revoke = {"code":"ER999", "message":"TOKEN REVOKED"}
 Invalid_Token = {"code":"ER998", "message":"INVALID TOKEN"}
 User_Disabled = {"code":"ER997", "message":"USER DISABLED"}
@@ -304,6 +308,9 @@ class UserLogoutdata(BaseModel):
 class UserFindiddata(BaseModel):
     nickname: str
 
+class refresh_token(BaseModel):
+    refresh_token: str
+
 async def verify_tokenb(req: str):
     token = req   
     try:
@@ -324,7 +331,7 @@ async def verify_tokenb(req: str):
 
 
 async def verify_tokena(req: Request):
-    token = req.headers["Authorization"]    
+    token = req.headers["Authorization"]  
     try:
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
@@ -342,14 +349,27 @@ async def verify_tokena(req: Request):
         raise HTTPException(status_code=401, detail=unauthorized_invaild)
 
 def verify_admin_token(req: Request):
-
+    Auth.refresh
     token = req.headers["Authorization"]
     
     if token == "Bearer cncztSAt9m4JYA9":
         return True
     else:
         return False
-    
+
+@userapi.post("/refresh_token")
+async def refresh_token(token: refresh_token):
+    try:
+        refreshtoken = token.refresh_token
+    except AttributeError as e:
+        refreshtoken = token['refresh_token']
+
+    try:
+        res = Auth.refresh(refreshtoken)
+        return res
+    except HTTPException as e:
+        raise HTTPException(400)
+
 @userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
 async def verify_token(token: verify_token):
 
@@ -390,9 +410,15 @@ async def revoke_token(token: token_revoke):
         raise HTTPException(status_code=400, detail=Invalid_Token)
     except _auth_utils.UserNotFoundError:
         raise HTTPException(status_code=400, detail=User_NotFound)
+"""  
+@userapi.delete('/delete')
+async def user_delete(authorized:bool = Depends(verify_token)):
+    if authorized:
+"""
+
 
 @userapi.post('/login', response_model=LoginResponse, responses=login_responses)
-async def user_login(userdata: UserLogindata):
+async def user_login(userdata: UserLogindata, request: Request):
     email = userdata.email
     password = userdata.password
 
@@ -408,36 +434,25 @@ async def user_login(userdata: UserLogindata):
         #HTTP 에러가 발생한 경우
         #오류 가져오기 json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
         res = json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
-        if " : " in res:
-            res = res.split(" : ")[0]
-            if res == "INVALID_EMAIL":
-                raise HTTPException(status_code=400, detail=Invaild_Email)
+        res = res.split(" : ")[0]
+        if "INVALID_EMAIL" in res:
+            raise HTTPException(status_code=400, detail=Invaild_Email)
 
-            if res == "INVALID_PASSWORD":
-                raise HTTPException(status_code=400, detail=Invaild_Password)
+        if "INVALID_PASSWORD" in res:
+            raise HTTPException(status_code=400, detail=Invaild_Password)
 
-            if res == "USER_DISABLED":
-                raise HTTPException(status_code=400, detail=User_Disabled)
-
-        else:
-            if res == "INVALID_EMAIL":
-                raise HTTPException(status_code=400, detail=Invaild_Email)
-
-            if res == "INVALID_PASSWORD":
-                raise HTTPException(status_code=400, detail=Invaild_Password)
-
-            if res == "USER_DISABLED":
-                raise HTTPException(status_code=400, detail=User_Disabled)
+        if "USER_DISABLED" in res:
+            raise HTTPException(status_code=400, detail=User_Disabled)
 
     currentuser = Auth.current_user
-    print(datetime.datetime.now())
     user = requests.post(
         url='https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/user/get',
         json={'Id':currentuser['localId']}
     )
-    print(datetime.datetime.now())
+
     user.encoding = "UTF-8"
     userjson = json.loads(user.text)
+    
     userjson['access_token'] = currentuser['idToken']
     userjson['refresh_token'] = currentuser['refreshToken']
     userjson['expires_in'] = currentuser['expiresIn']
@@ -454,6 +469,23 @@ async def user_login(userdata: UserLogindata):
         s.send_message(msg)
         """
         raise HTTPException(status_code=400, detail=Email_Not_Verified)
+
+    
+    id = userjson['id']
+    login_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ip = request.client.host
+    login_log = {}
+    login_log['Id'] = id
+    login_log['Login_At'] = login_at
+    login_log['Login_IP'] = ip
+    login_log['nickname'] = userjson['nickname']
+
+    lres = requests.post(
+        url='https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/loginlog/add',
+        json=login_log
+    )
+
+    print(lres.text)
 
     return userjson
 #.
@@ -483,6 +515,12 @@ async def user_create(userdata: UserRegisterdata):
     #닉네임이 공란이면
     if(len(nickname) == 0):
         raise HTTPException(status_code=400, detail=Missing_Nickname)
+    
+    if 'removed' in nickname:
+        raise HTTPException(status_code=400, detail=Nickname_cantuse)
+    
+    if 'kakao' in email:
+        raise HTTPException(status_code=400, detail=email_provider_error)
 
     try:
         #파이어베이스의 유저만드는거 사용
@@ -491,31 +529,18 @@ async def user_create(userdata: UserRegisterdata):
         #HTTP 에러가 발생한 경우
         #오류 가져오기 json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
         res = json.loads(str(erra).split("]")[1].split('"errors": [\n')[1])['message']
-        if " : " in res:
-            res = res.split(" : ")[0]
-            if res == "INVALID_EMAIL":
-                raise HTTPException(status_code=400, detail=Invaild_Email)
+        res = res.split(" : ")[0]
+        if "INVALID_EMAIL" in res:
+            raise HTTPException(status_code=400, detail=Invaild_Email)
+        
+        if "INVALID_PASSWORD" in res:
+            raise HTTPException(status_code=400, detail=Invaild_Password)
 
-            if res == "INVALID_PASSWORD":
-                raise HTTPException(status_code=400, detail=Invaild_Password)
+        if "USER_DISABLED" in res:
+            raise HTTPException(status_code=400, detail=User_Disabled)
 
-            if res == "USER_DISABLED":
-                raise HTTPException(status_code=400, detail=User_Disabled)
-
-            if res == "EMAIL_EXISTS":
-                raise HTTPException(status_code=400, detail=Email_Exists)
-        else:
-            if res == "INVALID_EMAIL":
-                raise HTTPException(status_code=400, detail=Invaild_Email)
-
-            if res == "INVALID_PASSWORD":
-                raise HTTPException(status_code=400, detail=Invaild_Password)
-
-            if res == "USER_DISABLED":
-                raise HTTPException(status_code=400, detail=User_Disabled)
-            
-            if res == "EMAIL_EXISTS":
-                raise HTTPException(status_code=400, detail=Email_Exists)
+        if "EMAIL_EXISTS" in res:
+            raise HTTPException(status_code=400, detail=Email_Exists)
 
     #유저의 고유 아이디 (UniqueID)
     id = a['localId']

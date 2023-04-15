@@ -4,6 +4,7 @@ import crypto
 import sys
 sys.modules['Crypto'] = crypto
 
+from starlette_context import middleware, plugins
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 from starlette.staticfiles import StaticFiles
@@ -17,7 +18,7 @@ origins = [
     "http://3.34.125.70:83",
 ]
 
-app.add_middleware(
+app.add_middleware( 
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
