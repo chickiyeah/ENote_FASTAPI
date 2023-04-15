@@ -571,7 +571,7 @@ async def user_create(userdata: UserRegisterdata):
         d.starttls()
         d.login("noreply.enote", "iguffrrwnfhmocxt")
         d.send_message(msg)
-    except smtplib.SMTPSenderRefused:
+    except smtplib.SMTPSenderRefused: #sender refused to send message
         d = smtplib.SMTP("smtp.gmail.com", 587)
         d.ehlo()
         d.starttls()
