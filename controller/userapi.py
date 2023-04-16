@@ -468,7 +468,7 @@ async def user_delete(authorized:bool = Depends(verify_tokena)):
             ).text)['affectedRows']
             if res > 0:
                 auth.delete_user(id)
-                return "User deleted successfully"
+                return {"detail":"User deleted successfully"}
         except requests.exceptions.HTTPError as e:
             err = json.loads(e.args[1])
             raise HTTPException(status_code=400, detail=err)
