@@ -105,6 +105,8 @@ Nickname_cantuse = {'code':'ER017','message':'Nickname Cant Contain "removed"'}
 
 email_provider_error = {'code':'ER018','message':'Unable to sign up using this email provider'}
 
+login_ip_diffrent = {'code':'ER019','message':'Unable to renew the access token. The IP is different.'}
+
 Token_Revoke = {"code":"ER999", "message":"TOKEN REVOKED"}
 Invalid_Token = {"code":"ER998", "message":"INVALID TOKEN"}
 User_Disabled = {"code":"ER997", "message":"USER DISABLED"}
@@ -335,9 +337,9 @@ async def verify_tokena(req: Request):
     try:
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
-        auth.verify_id_token(token, check_revoked=True)
+        user = auth.verify_id_token(token, check_revoked=True)
         # Token is valid and not revoked.
-        return True
+        return True, user
     except auth.RevokedIdTokenError:
         # Token revoked, inform the user to reauthenticate or signOut().
         raise HTTPException(status_code=401, detail=unauthorized_revoked)
@@ -347,6 +349,8 @@ async def verify_tokena(req: Request):
     except auth.InvalidIdTokenError:
         # Token is invalid
         raise HTTPException(status_code=401, detail=unauthorized_invaild)
+    except auth.UserNotFoundError:
+        raise HTTPException(status_code=401, detail=User_NotFound)
 
 def verify_admin_token(req: Request):
     Auth.refresh
@@ -358,7 +362,9 @@ def verify_admin_token(req: Request):
         return False
 
 @userapi.post("/refresh_token")
-async def refresh_token(token: refresh_token):
+async def refresh_token(token: refresh_token, requset: Request):
+    client = requset.client.host
+
     try:
         refreshtoken = token.refresh_token
     except AttributeError as e:
@@ -366,13 +372,34 @@ async def refresh_token(token: refresh_token):
 
     try:
         currentuser = Auth.refresh(refreshtoken)
-        userjson = {}
-        userjson['id'] = currentuser['userId']
-        userjson['access_token'] = currentuser['idToken']
-        userjson['refresh_token'] = currentuser['refreshToken']  
-        return userjson
+    except requests.HTTPError as e:
+        error = json.loads(e.args[1])['error']['message']
+        if error == "TOKEN_EXPIRED":
+            raise HTTPException(400, Invalid_Token)
+        
+
+    userjson = {}
+    userjson['id'] = currentuser['userId']
+    userjson['access_token'] = currentuser['idToken']
+    userjson['refresh_token'] = currentuser['refreshToken']  
+
+    rjson = {
+        'Id': userjson['id']
+    }
+    try:
+        lastip = json.loads(requests.post(
+            'https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/loginlog/get/last',
+            json=rjson
+        ).text)[0]['Login_IP']
+
+        if lastip == client:
+            return userjson
+        else:
+            auth.revoke_refresh_tokens(userjson['id'])
+            raise HTTPException(401, login_ip_diffrent)
+            
     except HTTPException as e:
-        raise HTTPException(500)
+        raise HTTPException(401, login_ip_diffrent)
 
 @userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
 async def verify_token(token: verify_token):
@@ -414,11 +441,36 @@ async def revoke_token(token: token_revoke):
         raise HTTPException(status_code=400, detail=Invalid_Token)
     except _auth_utils.UserNotFoundError:
         raise HTTPException(status_code=400, detail=User_NotFound)
-"""  
+
 @userapi.delete('/delete')
-async def user_delete(authorized:bool = Depends(verify_token)):
+async def user_delete(authorized:bool = Depends(verify_tokena)):
     if authorized:
-"""
+        user = authorized[1]
+        id = user['user_id']
+        email = user['firebase']['identities']['email'][0]
+        nickname = json.loads(requests.post(
+            url='https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/user/get',
+            json={'Id':user['user_id']}
+        ).text)['nickname']
+
+        deljson = {
+            'id':id,
+            'email':email,
+            'nickname':nickname
+        }
+        
+        try:
+            res = json.loads(requests.delete(
+                'https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/user/delete',
+                json=deljson
+            ).text)['affectedRows']
+            if res > 0:
+                auth.delete_user(id)
+                return "User deleted successfully"
+        except requests.exceptions.HTTPError as e:
+            err = json.loads(e.args[1])
+            raise HTTPException(status_code=400, detail=err)
+        
 
 
 @userapi.post('/login', response_model=LoginResponse, responses=login_responses)
@@ -655,12 +707,18 @@ async def user_reset_password(userdata: UserResetPWdata):
     
     try:
         s.send_message(rst)
-    except smtplib.SMTPServerDisconnected:
+    except smtplib.SMTPServerDisconnected: # when server disconnect
         d = smtplib.SMTP("smtp.gmail.com", 587)
         d.ehlo()
         d.starttls()
         d.login("noreply.enote", "iguffrrwnfhmocxt")
         d.send_message(rst)
+    except smtplib.SMTPSenderRefused: #sender refused to send message
+        d = smtplib.SMTP("smtp.gmail.com", 587)
+        d.ehlo()
+        d.starttls()
+        d.login("noreply.enote", "iguffrrwnfhmocxt")
+        d.send_message(rst)  
 
     return rstlink
 
@@ -690,6 +748,12 @@ async def user_verify(userdata: EmailVerify):
             d.starttls()
             d.login("noreply.enote", "iguffrrwnfhmocxt")
             d.send_message(ver)
+        except smtplib.SMTPSenderRefused: #sender refused to send message
+            d = smtplib.SMTP("smtp.gmail.com", 587)
+            d.ehlo()
+            d.starttls()
+            d.login("noreply.enote", "iguffrrwnfhmocxt")
+            d.send_message(ver)         
         
         return {"detail":"Email Verification Link Sent"}
 
@@ -718,7 +782,15 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
             d.starttls()
             d.login("noreply.enote", "iguffrrwnfhmocxt")
             d.send_message(message)
-
+            return {"detail":"Email Sent"}
+        except smtplib.SMTPSenderRefused: #sender refused to send message
+            d = smtplib.SMTP("smtp.gmail.com", 587)
+            d.ehlo()
+            d.starttls()
+            d.login("noreply.enote", "iguffrrwnfhmocxt")
+            d.send_message(message) 
+            return {"detail":"Email Sent"}
+        
         return {"detail":"Email Sent"}
     else:
         raise HTTPException(status_code=401, detail=unauthorized)
