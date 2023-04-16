@@ -333,8 +333,8 @@ async def verify_tokenb(req: str):
 
 
 async def verify_tokena(req: Request):
-    token = req.headers["Authorization"]  
     try:
+        token = req.headers["Authorization"]  
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
         user = auth.verify_id_token(token, check_revoked=True)
@@ -351,6 +351,8 @@ async def verify_tokena(req: Request):
         raise HTTPException(status_code=401, detail=unauthorized_invaild)
     except auth.UserNotFoundError:
         raise HTTPException(status_code=401, detail=User_NotFound)
+    except KeyError:
+        raise HTTPException(status_code=400, detail=unauthorized)
 
 def verify_admin_token(req: Request):
     Auth.refresh
