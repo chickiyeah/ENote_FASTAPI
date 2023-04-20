@@ -11,7 +11,12 @@ window.addEventListener('load',()=>{
                 </ul>
      */
     if (atoken != null) {
-
+        profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><i class="fa-duotone fa-right-to-bracket"></i></p>
+        <ul class="profile-hide"> 
+            <li><a href="/mypage">내계정</a></li>
+            <li><a href="/mypage/unregister">탈퇴하기</a></li>
+            <li id="logOutBtn"><a href="#">로그아웃</a></li>              
+        </ul>`)
     }else{
         //node = document.createElement("")
         profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="#">${nickname}</a></p>
@@ -36,7 +41,7 @@ window.addEventListener('load',()=>{
               .on("click", function (e) {
                 //off 메서드를 혼합하여 사용함으로써 해당 이벤트 중복 오류를 막을 수 있었습니다.
                 e.preventDefault();
-                console.log(0);
+                // console.log(0);
                 $(this).next().slideToggle("fast");
               });
           });
@@ -64,8 +69,8 @@ window.addEventListener('load',()=>{
             })
             .then((data) => {
               console.log(data);
-              sessionStorage.removeItem("refresh-token");
-              sessionStorage.removeItem("acces-token");
+              localStorage.clear()
+              sessionStorage.clear()
               location.href = "/";
             })
             .catch((error) => {
