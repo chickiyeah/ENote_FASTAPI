@@ -13,7 +13,7 @@ window.addEventListener('load',()=>{
     console.log(atoken)
     if (atoken == null) {
         console.log(atoken == null)
-        profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="#"><i class="fa-duotone fa-right-to-bracket"></i></a></p>
+        profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="#"><i class="fa-solid fa-right-to-bracket"></i></a></p>
 `)
         return
     }else{
