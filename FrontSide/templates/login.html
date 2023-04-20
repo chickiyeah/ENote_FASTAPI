@@ -24,16 +24,16 @@
             <div class="join-group">
                 <div class="input-box">
                     <div class="user-info">
-                        <label for="">이메일</label>
-                        <input type="text">
+                        <label for="Id">이메일</label>
+                        <input id="Id" type="text">
                     </div>
                     <div class="user-info">
-                        <label for="">비밀번호</label>
-                        <input type="text">
+                        <label type="password" for="Pw">비밀번호</label>
+                        <input id="Pw" type="text">
                     </div>
                     <div class="btn-box">
-                        <button>로그인</button>
-                        <p><a href="#">회원이 아니신가요? 회원가입</a></p>
+                        <button id="logInBtn">로그인</button>
+                        <p id="toRegister"><a href="#">회원이 아니신가요? 회원가입</a></p>
                     </div>
                 </div>
             </div>
@@ -43,5 +43,6 @@
     </footer>
 </body>
 <script src="../static/js/include.js"></script>
-
+<script type="module" src="../static/js/logIn.js"></script>
+<script type="module" src="../static/js/enterEvent.js"></script>
 </html>

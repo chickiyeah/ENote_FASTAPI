@@ -15,6 +15,7 @@ main .detail-box .tit-box {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
     margin: auto;
     margin-bottom: 40px;
     border: 1px solid #ccc;
@@ -36,27 +37,46 @@ main .detail-box .tit-box i {
 }
 
 main .detail-box .txt-group {
+    width: 100%;
+    margin: auto;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
-main .detail-box .txt-group .txt-box {
+main .detail-box .txt-group .txt-tit>div {
+    width: 16px;
+}
+
+main .detail-box .txt-group .txt-tit>p,
+main .detail-box .txt-group .txt-box>p {
+    width: 20%;
+    display: inline-block;
     text-align: center;
 }
 
-main .detail-box .txt-group .txt-box p:first-child {
-    font-size: 18px;
-    font-weight: 600;
+main .detail-box .txt-group .txt-tit,
+main .detail-box .txt-group .txt-box {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 300;
     margin-bottom: 16px;
 }
 
-main .detail-box .txt-group .txt-box p:not(:first-child) {
-    font-size: 14px;
-    font-weight: 300;
-    margin-bottom: 10px;
+main .detail-box .txt-group .txt-tit>p {
+    font-size: 20px;
+    font-weight: 700;
 }
 
-main .detail-box .txt-group .txt-box:not(:last-child) {
-    margin-right: 100px;
+main .detail-box .txt-group .txt-box>p {
+    font-size: 16px;
+    font-weight: 400;
 }
+
+/* main .detail-box .txt-group .txt-tit>p:not(:last-child),
+main .detail-box .txt-group .txt-box>p:not(:last-child) {
+    margin-right: 100px;
+} */

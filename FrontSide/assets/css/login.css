@@ -1,0 +1,82 @@
+@charset "UTF-8";
+
+/*==========================
+공통
+============================*/
+main .container {
+    max-width: 1108px;
+    margin: auto;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+main h3 {
+    font-size: 30px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+main .container {
+    max-width: 1108px;
+    margin: auto;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+main .join-group {
+    width: 100%;
+    text-align: center;
+}
+
+main .join-group .input-box {
+    width: 396px;
+    display: inline-block;
+    text-align: justify;
+    margin-bottom: 30px;
+}
+
+main .join-group .input-box .user-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+main .join-group .input-box .user-info:not(:last-child) {
+    margin-bottom: 26px;
+}
+
+main .join-group .input-box .user-info label {
+    width: 80px;
+    font-size: 14px;
+}
+
+main .join-group .input-box .user-info input {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    border: 1px solid #CACACA;
+    border-radius: 20px;
+    outline: 0;
+    padding-left: 10px;
+}
+
+main .join-group .input-box .btn-box {
+    width: 100%;
+    margin: auto;
+}
+
+main .join-group .input-box .btn-box button {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    background: #000;
+    border-radius: 20px;
+    color: #fff;
+    margin-bottom: 24px;
+}
+
+main .join-group .input-box .btn-box p a {
+    font-size: 12px;
+    text-align: center;
+}
