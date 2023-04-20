@@ -1,5 +1,5 @@
 window.addEventListener('load',()=>{
-    const atoken = sessionStorage.getItem("access_token")
+    const atoken = localStorage.getItem("refresh-token")
     const nickname = sessionStorage.getItem("user_name")
     const profile = document.querySelector(".profile");
     /**
@@ -10,13 +10,12 @@ window.addEventListener('load',()=>{
                     <li id="logOutBtn"><a href="#">로그아웃</a></li>              
                 </ul>
      */
-    if (atoken != null) {
-        profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><i class="fa-duotone fa-right-to-bracket"></i></p>
-        <ul class="profile-hide"> 
-            <li><a href="/mypage">내계정</a></li>
-            <li><a href="/mypage/unregister">탈퇴하기</a></li>
-            <li id="logOutBtn"><a href="#">로그아웃</a></li>              
-        </ul>`)
+    console.log(atoken)
+    if (atoken == null) {
+        console.log(atoken == null)
+        profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="#"><i class="fa-duotone fa-right-to-bracket"></i></a></p>
+`)
+        return
     }else{
         //node = document.createElement("")
         profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="#">${nickname}</a></p>
