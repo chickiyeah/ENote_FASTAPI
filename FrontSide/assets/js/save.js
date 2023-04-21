@@ -153,7 +153,7 @@ saveBtn.addEventListener("click", () => {
         //   inf.textContent = "한국어로 입력해주세요";
         //이미 저장되어있는 단어라면
       } else if (eng.includes(enSpace.value)) {
-        inf.textContent = "이미 저장되어 있는 단어입니다.";
+        alert("이미 저장되어 있는 단어입니다.");
         //위 조건들을 통과하면 저장완료하기
       } else {
         noteData();
@@ -161,6 +161,6 @@ saveBtn.addEventListener("click", () => {
     })
     .catch((error) => {
       console.log(error);
-      inf.textContent = "다시 입력해주세요.";
+      alert("다시 입력해주세요.");
     });
 });

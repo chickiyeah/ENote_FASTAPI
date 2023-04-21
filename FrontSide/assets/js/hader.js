@@ -1,4 +1,5 @@
-window.addEventListener('load',()=>{
+
+let load = ()=>{
     const atoken = localStorage.getItem("refresh-token")
     const nickname = sessionStorage.getItem("user_name")
     const profile = document.querySelector(".profile");
@@ -13,8 +14,7 @@ window.addEventListener('load',()=>{
     console.log(atoken)
     if (atoken == null) {
         console.log(atoken == null)
-        profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="/login"><i class="fa-solid fa-right-to-bracket"></i></a></p>
-`)
+        profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="/login"><i class="fa-solid fa-right-to-bracket"></i></a></p>`)
         return
     }else{
         //node = document.createElement("")
@@ -77,4 +77,5 @@ window.addEventListener('load',()=>{
             });
         });
     }
-})
+}
+window.onload(load())
