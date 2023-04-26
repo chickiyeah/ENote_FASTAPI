@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
 import crypto
 import sys
+import uvicorn
 sys.modules['Crypto'] = crypto
 
 from starlette_context import middleware, plugins
@@ -35,3 +36,6 @@ app.include_router(papagoapi.papagoapi)
 app.include_router(noteapi.noteapi)
 app.include_router(Screen.ScreenRoute)
 app.mount("/static", StaticFiles(directory="FrontSide/assets"))
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=80, reload=True)

@@ -1,10 +1,30 @@
+// gnb 아코디언
+// let val = $(".burger-gnb .gnb");
+// val.hide();
+// $(".burger").click(function (e) {
+//   e.preventDefault();
+//   console.log(val);
+//   if (val.next("li").is(":visible")) {
+//     val.next().stop().slideUp(250);
+//     val.removeClass("active");
+//   } else {
+//     val.siblings(".gnb .gnbNav").stop().slideUp();
+//     val.siblings(".gnb").removeClass("active");
+//     val.next().stop().slideDown(250);
+//     val.addClass("active");
+//   }
+// });
+
 //햄버거메뉴
 $(document).ready(function () {
+  let val = $(".burger-gnb .gnb");
+  val.hide();
   const button = () => {
     const burger = document.querySelector(".burger"); // burger class 가져오기
     burger.addEventListener("click", () => {
-      // 클릭이벤트
+      console.log(val.next("ul"));
       burger.classList.toggle("toggle"); //toggle class가 있으면 제거, 없으면 추가
+      val.slideToggle(300);
     });
   };
   button();

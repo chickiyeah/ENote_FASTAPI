@@ -1,16 +1,17 @@
 try{
   const outBtn = document.querySelector("#logOutBtn");
-
+  const accessToken = sessionStorage.getItem("access-token");
+  
   outBtn.addEventListener("click", (e) => {
     e.preventDefault();
     fetch("http://3.34.125.70:83/api/user/logout", {
       method: "post",
       headers: {
         "Content-Type": "application/json",
-        Authorization: sessionStorage.getItem("access-token"),
+        Authorization: accessToken,
       },
       body: JSON.stringify({
-        access_token: sessionStorage.getItem("access-token"),
+        access_token: accessToken,
       }),
     })
       .then((response) => {
@@ -22,9 +23,9 @@ try{
       })
       .then((data) => {
         console.log(data);
-        sessionStorage.removeItem("refresh-token");
-        sessionStorage.removeItem("acces-token");
-        location.href = "/";
+        sessionStorage.clear();
+        localStorage.clear();
+        alert("로그아웃 성공");
       })
       .catch((error) => {
         console.log(error);
