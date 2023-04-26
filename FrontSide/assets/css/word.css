@@ -62,3 +62,9 @@ main .word-group .word-box .bg .input-group button {
     border-radius: 20px;
     color: #fff;
 }
+#inf{
+    position: absolute;
+    font-size: 13px;
+    color: rgba(255, 0, 0, 0.5);
+    bottom: 30px;
+}
