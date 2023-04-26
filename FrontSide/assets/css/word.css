@@ -43,6 +43,7 @@ main .word-group .word-box .bg .input-group {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    position:relative;
 }
 
 main .word-group .word-box .bg .input-group input {
@@ -62,7 +63,7 @@ main .word-group .word-box .bg .input-group button {
     border-radius: 20px;
     color: #fff;
 }
-#inf{
+main .word-group .word-box .bg #inf{
     position: absolute;
     font-size: 13px;
     color: rgba(255, 0, 0, 0.5);

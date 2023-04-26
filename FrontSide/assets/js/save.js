@@ -3,7 +3,7 @@ import { clickEnter } from "./enterEvent.js";
 const enSpace = document.querySelector("#en");
 const koSpace = document.querySelector("#ko");
 const spSpace = document.querySelector("#pr");
-const saveBtn = document.querySelector(".saveBtn");
+const saveBtn = document.querySelector("#saveBtn");
 
 //detectlang api
 function detectLangFetch(textConten, translate) {
@@ -153,7 +153,6 @@ window.addEventListener("load", () => {
         .then((data) => {
           console.log(data);
           sessionStorage.setItem("user_email", data.email);
-          //근데 nickname 어떻게 가져오지 고민고민
         })
         .catch((error) => console.log(error));
     })

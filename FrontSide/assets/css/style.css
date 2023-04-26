@@ -214,6 +214,14 @@ main .btn-group button:first-child {
     color: #fff;
 }
 
+main .btn-group button:first-child a{
+    display:inline-block;
+    width:100%;
+    height:100%;
+    color: #fff;
+    font-size:12px;
+}
+
 main .btn-group button:last-child {
     padding: 10px 60px;
     border-radius: 20px;
