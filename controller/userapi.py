@@ -7,6 +7,7 @@ import datetime
 import re
 import smtplib
 from email.message import EmailMessage
+from controller.database import execute_sql
 
 s = smtplib.SMTP("smtp.gmail.com", 587)
 s.ehlo()
@@ -313,9 +314,9 @@ class UserFindiddata(BaseModel):
 class refresh_token(BaseModel):
     refresh_token: str
 
-async def verify_tokenb(req: str):
-    token = req   
+async def verify_tokenb(req: Request):
     try:
+        token = req.headers["Authorization"] 
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
         user = auth.verify_id_token(token, check_revoked=True)
@@ -796,3 +797,24 @@ async def admin_send_email(userdata: EmailSend, authorized: bool = Depends(verif
         return {"detail":"Email Sent"}
     else:
         raise HTTPException(status_code=401, detail=unauthorized)
+
+
+class user_update(BaseModel):
+    nickname:str
+    email:str
+    password:str
+
+@userapi.patch('/update')
+async def user_update(udata:user_update, authorized:bool = Depends(verify_tokenb)):
+    if authorized:
+        try:
+            auth.update_user(
+                authorized[1],
+                email = udata.email,
+                password = udata.password
+            )
+        except auth.EmailAlreadyExistsError:
+            raise HTTPException(400, "해당 이메일은 이미 사용중입니다.")
+
+        execute_sql("UPDATE `Users` SET `nickname` = '{0}', `email` = '{1}' WHERE id = '{2}'".format(udata.nickname, udata.email, authorized[1]))
+        return "업데이트 완료"

@@ -9,6 +9,7 @@ from starlette_context import middleware, plugins
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 from starlette.staticfiles import StaticFiles
+from controller.database import __init__
 
 
 
@@ -26,6 +27,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+__init__()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
