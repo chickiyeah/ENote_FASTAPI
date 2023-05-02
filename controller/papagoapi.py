@@ -210,45 +210,42 @@ async def detectlang(text: DetectLangValue):
 
 @papagoapi.post('/translate', responses=translate_responses)
 async def translate(text: TranslateValue, authorized: bool = Depends(verify_user_token)):
-    if authorized:
-        text = text.text
-        if text == "":
-            raise HTTPException(status_code=400, detail=textnotfound)
-        else:
-            res = await detectlang(text)
-
-            originlangcode = res
-
-        if "code" not in list(originlangcode.keys()):
-            originlangcode['code'] = "OK" 
-
-        code = originlangcode['code']
-        if code == "ER001":
-            raise HTTPException(status_code=400, detail=textnotfound)
-
-        if code == "ER002":
-            raise HTTPException(status_code=400, detail=nosupportlang)
-
-        if originlangcode['langCode'] == "ko":
-            originlang = {'source':'ko','target':'en','text':text}
-
-            translang = requests.post(
-                url="https://openapi.naver.com/v1/papago/n2mt",
-                headers=papagoheaders,
-                data=originlang
-            )
-
-            return {"text":json.loads(translang.text)['message']['result']['translatedText']}
-
-        if originlangcode['langCode'] == "en" or originlangcode['langCode'] == "fr":
-            originlang = {'source':'en','target':'ko','text':text}
-
-            translang = requests.post(
-                url="https://openapi.naver.com/v1/papago/n2mt",
-                headers=papagoheaders,
-                data=originlang
-            )
-            
-            return {"text":str(json.loads(translang.text)['message']['result']['translatedText'])}        
+    text = text.text
+    if text == "":
+        raise HTTPException(status_code=400, detail=textnotfound)
     else:
-        raise HTTPException(status_code=401, detail=unauthorized)
+        res = await detectlang(text)
+
+        originlangcode = res
+
+    if "code" not in list(originlangcode.keys()):
+        originlangcode['code'] = "OK" 
+
+    code = originlangcode['code']
+    if code == "ER001":
+        raise HTTPException(status_code=400, detail=textnotfound)
+
+    if code == "ER002":
+        raise HTTPException(status_code=400, detail=nosupportlang)
+
+    if originlangcode['langCode'] == "ko":
+        originlang = {'source':'ko','target':'en','text':text}
+
+        translang = requests.post(
+            url="https://openapi.naver.com/v1/papago/n2mt",
+            headers=papagoheaders,
+            data=originlang
+        )
+
+        return {"text":json.loads(translang.text)['message']['result']['translatedText']}
+
+    if originlangcode['langCode'] == "en" or originlangcode['langCode'] == "fr":
+        originlang = {'source':'en','target':'ko','text':text}
+
+        translang = requests.post(
+            url="https://openapi.naver.com/v1/papago/n2mt",
+            headers=papagoheaders,
+            data=originlang
+        )
+            
+        return {"text":str(json.loads(translang.text)['message']['result']['translatedText'])}        
