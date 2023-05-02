@@ -504,13 +504,7 @@ async def user_login(userdata: UserLogindata, request: Request):
             raise HTTPException(status_code=400, detail=User_Disabled)
 
     currentuser = Auth.current_user
-    user = requests.post(
-        url='https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/user/get',
-        json={'Id':currentuser['localId']}
-    )
-
-    user.encoding = "UTF-8"
-    userjson = json.loads(user.text)
+    userjson = execute_sql("SELECT * FROM Users WHERE ID = \"%s\"" % currentuser['localId'])[0]
     
     userjson['access_token'] = currentuser['idToken']
     userjson['refresh_token'] = currentuser['refreshToken']
@@ -530,21 +524,11 @@ async def user_login(userdata: UserLogindata, request: Request):
         raise HTTPException(status_code=400, detail=Email_Not_Verified)
 
     
+
     id = userjson['id']
     login_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     ip = request.client.host
-    login_log = {}
-    login_log['Id'] = id
-    login_log['Login_At'] = login_at
-    login_log['Login_IP'] = ip
-    login_log['nickname'] = userjson['nickname']
-
-    lres = requests.post(
-        url='https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/loginlog/add',
-        json=login_log
-    )
-
-    print(lres.text)
+    execute_sql("INSERT INTO LoginLog VALUES ('{0}','{1}','{2}','{3}')".format(id, login_at, ip, userjson['nickname']))
 
     return userjson
 #.
@@ -633,19 +617,11 @@ async def user_create(userdata: UserRegisterdata):
         d.login("noreply.enote", "iguffrrwnfhmocxt")
         d.send_message(msg)        
 
-    try:
-        c = requests.post(
-            url = 'https://rjlmigoly0.execute-api.ap-northeast-2.amazonaws.com/Main/user/add',
-            json=data
-        )
-    except requests.exceptions.RequestException as erra:
-        raise HTTPException(status_code=500, detail=str(erra))
+    res = execute_sql("INSERT INTO Users VALUES (\""+id+"\",\""+nickname+"\",\""+email+"\",\""+str(now.strftime("%Y-%m-%d %H:%M:%S"))+"\")")
+    if res != 1:
+        raise HTTPException(500, "ERROR ON CREATE DATA FOR NEW USER")
     
-
-    if(c.text == "\"Status Code : 200 | OK : Successfully added data \""):
-        return json.loads('{"detail":"User Register Successfully"}')
-    
-    raise HTTPException(status_code=500, detail=json.loads(c.text)['message'])
+    return {"detail":"USER ADD SUCCESS"}    
 
 @userapi.post('/logout')
 async def user_logout(userdata: UserLogoutdata):
