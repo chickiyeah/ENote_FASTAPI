@@ -30,7 +30,7 @@ newBtn.addEventListener("click", () => {
     inf.textContent = "비밀번호는 6자리 이상 입력해주세요.";
     Pw.focus();
   } else {
-    fetch("http://3.34.125.70:83/api/user/register", {
+    fetch(registerUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,19 +42,22 @@ newBtn.addEventListener("click", () => {
       }),
     })
       .then((response) => {
-        if (response.status !== 200) {
-          throw new Error("400 아니면 500 에러남");
-        } else {
+        if (response.status == 400) {
+          throw new Error("중복된 이메일입니다.");
+        } else if (response.status == 422) {
+          throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
+        } else if (response.status === 500) {
+          throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
+        } else if (response.status === 201) {
           return response.json();
         }
       })
       .then((data) => {
-        console.log(data);
+        alert("회원가입이 완료되었습니다. 이메일 인증 후 로그인해주세요.");
         location.href = "/logIn";
       })
       .catch((error) => {
-        console.log(error);
-        inf.textContent = "이메일이 제대로 입력되지 않았습니다.";
+        alert(error);
       });
   }
 });

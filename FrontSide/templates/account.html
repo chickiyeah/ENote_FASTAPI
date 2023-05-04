@@ -24,19 +24,19 @@
             <div class="account-group">
                 <div class="input-box">
                     <div class="user-info">
-                        <label for="">닉네임</label>
-                        <input type="text" value="닉네임">
+                        <label for="#nickname">닉네임</label>
+                        <input type="text" id="nickname" value="닉네임">
                     </div>
                     <div class="user-info">
-                        <label for="">이메일</label>
-                        <input type="text" value="nick@naver.com">
+                        <label for="#Id">이메일</label>
+                        <input type="text" id="Id" value="" disabled>
                     </div>
                     <div class="user-info">
-                        <label for="">비밀번호</label>
-                        <input type="text">
+                        <label for="#Pw">비밀번호</label>
+                        <input type="text" id="Pw">
                     </div>
                     <div class="btn-box">
-                        <button>수정하기</button>
+                        <button id="EditBtn">수정하기</button>
                     </div>
                 </div>
             </div>
@@ -46,5 +46,6 @@
     </footer>
 </body>
 <script src="../static/js/include.js"></script>
-
+<script type="module" src="../static/js/myPageEdit.js"></script>
+<script type="module" src="../static/js/enterEvent.js"></script>
 </html>
