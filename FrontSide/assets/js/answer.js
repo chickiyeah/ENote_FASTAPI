@@ -117,7 +117,7 @@ window.addEventListener("load", (e) => {
               num += 1;
               if (num >= data.data.length) {
                 //정답 입력 공간 없애기
-                wordBorder.textContent = "수고하셨습니다.";
+                wordBorder.innerHTML = "<p>수고하셨습니다.<p>";
                 a.disabled = true;
                 s.disabled = true;
               } else {
