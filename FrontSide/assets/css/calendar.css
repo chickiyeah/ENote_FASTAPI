@@ -47,7 +47,13 @@
     outline-offset: 3.2px;
     outline: #0ca0fd solid 2px;
 }
-
+.custom_calendar_table tbody td span{
+    opacity: 0;
+}
+.custom_calendar_table tbody td.select_day > span{
+    font-weight:bold;
+    opacity: 1;
+}
 #calendarForm {
     margin: 100px 0;
 }

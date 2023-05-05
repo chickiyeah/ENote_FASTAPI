@@ -624,11 +624,9 @@ async def user_create(userdata: UserRegisterdata):
     return {"detail":"USER ADD SUCCESS"}    
 
 @userapi.post('/logout')
-async def user_logout(userdata: UserLogoutdata):
-    auth = await verify_tokenb(userdata.access_token)
-    if auth:
-        print(auth)
-        res = await revoke_token(list(auth)[1])
+async def user_logout(userdata: UserLogoutdata, authorized: bool = Depends(verify_tokenb)):
+    if authorized:
+        res = await revoke_token(list(authorized)[1])
         return {"detail":"User Logout Successfully"}
     else:
         raise HTTPException(status_code=401, detail=unauthorized)

@@ -55,7 +55,7 @@ newBtn.addEventListener("click", () => {
       })
       .then((data) => {
         alert("회원가입이 완료되었습니다. 이메일 인증 후 로그인해주세요.");
-        location.href = "/logIn";
+        location.href = "/login";
       })
       .catch((error) => {
         alert(error);

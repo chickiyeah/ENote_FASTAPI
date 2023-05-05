@@ -27,22 +27,43 @@ function detectLangFetch(textConten, translate) {
     }),
   })
     .then((response) => {
-      console.log(response.status);
-      if (response.status === 400) {
-        throw new Error("빈칸을 채워주세요.");
-      } else if (response.status === 401) {
-        throw new Error("로그인한 후 이용해주세요.");
-      } else if (response.status === 422 || response.status === 500) {
-        throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-        
-      } else if (response.status === 200) {
-        return response.json();
+      if(response.status !== 200){
+        let detail_error =  json.detail
+        response.json().then(json=>{
+          if(detail_error.code === "ER001"){
+            alert("번역할 텍스트를 찾을 수 없습니다.")
+          }else if(detail_error.code === "ER002"){
+            alert("지원하지 않는 언어입니다.")
+          }else if(detail_error.code === "ER013"){
+            alert("로그인 후 이용해주시길 바랍니다.")
+          }else if(detail_error.code === "ER014"){
+            alert("재로그인이 필요합니다.")
+          }else if(detail_error.code === "ER015"){
+            alert("재로그인이 필요합니다.")
+          }else if(detail_error.code === "ER016"){
+            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+          }
+        })
+      }else{
+        response.json().then(data=>{
+          translate;
+        })
       }
+      // console.log(response);
+      // if (response.status === 400) {
+      //   throw new Error("빈칸을 채워주세요.");
+      // } else if (response.status === 401) {
+      //   throw new Error("로그인한 후 이용해주세요.");
+      // } else if (response.status === 422 || response.status === 500) {
+      //   throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
+      // } else if (response.status === 200) {
+      //   return response.json();
+      // }
     })
-    .then((data) => {
-      translate;
-      console.log(data);
-    })
+    // .then((data) => {
+    //   translate;
+    //   console.log(data);
+    // })
     .catch((error) => {
       alert(error);
     });
@@ -57,19 +78,43 @@ const getDataTranslate = (whichOne, changeValue) => {
       text: whichOne.value,
     }),
   })
-    .then((response) => {
-      console.log(response.status);
-      if (response.status === 400) {
-        throw new Error("빈칸을 채워주세요.");
-      } else if (response.status === 401) {
-        throw new Error("로그인 후 이용해주세요.");
-      } else if (response.status === 422 || response.status === 500) {
-        throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-      } else if (response.status === 200) {
-        return response.json();
-      }
-    })
-    .then((funcData) => (changeValue.value = funcData.text))
+  .then((response)=>{
+    if(response.status !== 200){
+      response.json().then(json=>{
+        let detail_error =  json.detail;
+          if(detail_error.code === "ER001"){
+            alert("번역할 텍스트를 찾을 수 없습니다.")
+          }else if(detail_error.code === "ER002"){
+            alert("지원하지 않는 언어입니다.")
+          }else if(detail_error.code === "ER013"){
+            alert("로그인 후 이용해주시길 바랍니다.")
+          }else if(detail_error.code === "ER014"){
+            alert("재로그인이 필요합니다.")
+          }else if(detail_error.code === "ER015"){
+            alert("재로그인이 필요합니다.")
+          }else if(detail_error.code === "ER016"){
+            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+          }
+      })
+    }else{
+      response.json().then(funcData=>{
+        (changeValue.value = funcData.text)
+      })
+    }
+  })
+    // .then((response) => {
+    //   console.log(response);
+    //   if (response.status === 400) {
+    //     throw new Error("빈칸을 채워주세요.");
+    //   } else if (response.status === 401) {
+    //     throw new Error("로그인 후 이용해주세요.");
+    //   } else if (response.status === 422 || response.status === 500) {
+    //     throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
+    //   } else if (response.status === 200) {
+    //     return response.json();
+    //   }
+    // })
+    // .then((funcData) => (changeValue.value = funcData.text))
     .catch((error) => {
       alert(error);
     });
@@ -88,20 +133,42 @@ const noteData = () => {
     }),
   })
     .then((response) => {
-      console.log(response.status);
-      if (response.status === 400) {
-        throw new Error("한국어 칸을 채워주세요.");
-      } else if (response.status === 401) {
-        throw new Error("로그인 후 이용해주세요.");
-      } else if (response.status === 422 || response.status === 500) {
-        throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-      } else if (response.status === 201) {
-        return response.json();
+      if(response.status !== 200){
+        response.json().then(json=>{
+          let detail_error = json.detail
+          if(detail_error.code === "ER013"){
+            alert("로그인 후 이용해주시길 바랍니다.")
+          }else if(detail_error.code ==="ER014"){
+            alert("재로그인이 필요합니다.")
+          }else if(detail_error.code ==="ER015"){
+            alert("재로그인이 필요합니다.")
+          }else if(detail_error.code ==="ER016"){
+            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+          }else if(detail_error.code ==="ER017"){
+            alert("한국어 칸을 채워주세요.")
+          }else if(detail_error.code ==="ER018"){
+            alert("영어 칸을 채워주세요.")
+          }
+        })
+      }else{
+        response.json().then(data=>{
+          console.log(data)
+        })
       }
+      // console.log(response);
+      // if (response.status === 400) {
+      //   throw new Error("한국어 칸을 채워주세요.");
+      // } else if (response.status === 401) {
+      //   throw new Error("로그인 후 이용해주세요.");
+      // } else if (response.status === 422 || response.status === 500) {
+      //   throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
+      // } else if (response.status === 201) {
+      //   return response.json();
+      // }
     })
-    .then((data) => {
-      console.log(data);
-    })
+    // .then((data) => {
+    //   console.log(data);
+    // })
     .catch((error) => {
       alert(error);
     });
@@ -127,44 +194,68 @@ window.addEventListener("load", () => {
         }),
       })
         .then((res) => {
-          console.log(res.status);
-          if (res.status === 422 || res.status === 500) {
-            throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-          } else if (res.status === 200) {
-            return res.json();
-          }
-        })
-        .then((data) => {
-          sessionStorage.setItem("access_token", data.access_token);
-          sessionStorage.setItem("user_id", data.id);
-          sessionStorage.setItem("refresh_token", data.refresh_token);
-          //verify token api
-          fetch(verifyUrl, {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              access_token: sessionStorage.getItem("access_token"),
-            }),
-          })
-            .then((res) => {
-              console.log(response.status);
-              if (res.status === 400) {
-                throw new Error("재로그인이 필요합니다.");
-              } else if (res.status === 422 || res.status === 500) {
-                throw new Error(
-                  "오류가 발생했습니다. 관리자에게 문의해주세요."
-                );
-              } else if (res.status === 200) {
-                return res.json();
+          if(res.status !== 200){
+            res.json().then(json=>{
+              let detail_error = json.detail
+              if(detail_error.code === "ER011"){
+                alert("해당 유저는 존재하지 않습니다.")
+              }else if(detail_error.code === "ER997"){
+                alert("재로그인이 필요합니다.")
+              }else if(detail_error.code === "ER998"){
+                alert("재로그인이 필요합니다.")
+              }else if(detail_error.code === "ER999"){
+                alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
               }
             })
-            .then((data) => {
-              location.reload();
+          }else{
+            res.json().then((data)=>{
+              sessionStorage.setItem("access_token", data.access_token);
+              sessionStorage.setItem("user_id", data.id);
+              sessionStorage.setItem("refresh_token", data.refresh_token);
+              //verify token api
+              fetch(verifyUrl, {
+                method: "post",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  access_token: sessionStorage.getItem("access_token"),
+                }),
+              })
+                .then((res) => {
+                  console.log(response.status);
+                  if(res.status !== 200){
+                    res.json().then(json=>{
+                      let detail_error = json.detail;
+                      if(detail_error.code === "ER011"){
+                        alert("해당 유저는 존재하지 않습니다.")
+                      }else if(detail_error.code === "ER997"){
+                        alert("재로그인이 필요합니다.")
+                      }else if(detail_error.code === "ER998"){
+                        alert("재로그인이 필요합니다.")
+                      }else if(detail_error.code === "ER999"){
+                        alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+                      }
+                    })
+                  }else{
+                    res.json().then(data=>{
+                      location.reload();
+                    })
+                  }
+                })
+                .catch((error) => alert(error));
             })
-            .catch((error) => alert(error));
+          }
+          // console.log(res);
+          // if (res.status === 422 || res.status === 500) {
+          //   throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
+          // } else if (res.status === 200) {
+          //   return res.json();
+          // }
         })
+        // .then((data) => {
+         
+        // })
         .catch((error) => {
           alert(error);
         });
