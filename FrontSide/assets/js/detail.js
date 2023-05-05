@@ -15,7 +15,7 @@ var loadListName = localStorage.getItem("category_name");
 window.addEventListener("load", (e) => {
   e.preventDefault();
 
-  if (!sessionStorage.getItem("access_token")) {
+  if (!sessionStorage.getItem("access_token") && sessionStorage.getItem("refresh_token") !== null) {
     //refresh_token api
     fetch(refreshUrl, {
       method: "post",

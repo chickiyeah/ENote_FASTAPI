@@ -21,7 +21,7 @@ window.addEventListener("load", (e) => {
   e.preventDefault();
   var refreshUrl = "http://35.212.150.195/api/user/refresh_token";
   var verifyUrl = "http://35.212.150.195/api/user/verify_token";
-  if (!sessionStorage.getItem("access_token")) {
+  if (!sessionStorage.getItem("access_token") && sessionStorage.getItem("refresh_token") !== null) {
     //refresh_token api
     fetch(refreshUrl, {
       method: "post",

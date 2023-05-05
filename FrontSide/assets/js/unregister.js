@@ -7,7 +7,7 @@ var loginUrl = "http://35.212.150.195/api/user/login";
 var deleteUrl = "http://35.212.150.195/api/user/delete";
 
 clickEnter(inp, btn);
-if (!sessionStorage.getItem("access_token")) {
+if (!sessionStorage.getItem("access_token") && sessionStorage.getItem("refresh_token") !== null) {
   //refresh_token api
   fetch(refreshUrl, {
     method: "post",

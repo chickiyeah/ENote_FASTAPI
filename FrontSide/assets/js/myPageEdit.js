@@ -38,7 +38,7 @@ window.addEventListener("load", () => {
   nickname.value = sessionStorage.getItem("user_nickname");
   Id.value = sessionStorage.getItem("user_email");
   Id.value = sessionStorage.getItem("user_email");
-  if (!sessionStorage.getItem("access_token")) {
+  if (!sessionStorage.getItem("access_token") && sessionStorage.getItem("refresh_token") !== null) {
     //refresh_token api
     fetch(refreshUrl, {
       method: "post",

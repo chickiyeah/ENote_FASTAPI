@@ -27,12 +27,14 @@ function detectLangFetch(textConten, translate) {
     }),
   })
     .then((response) => {
+      console.log(response.status);
       if (response.status === 400) {
         throw new Error("빈칸을 채워주세요.");
       } else if (response.status === 401) {
         throw new Error("로그인한 후 이용해주세요.");
       } else if (response.status === 422 || response.status === 500) {
         throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
+        
       } else if (response.status === 200) {
         return response.json();
       }
@@ -56,6 +58,7 @@ const getDataTranslate = (whichOne, changeValue) => {
     }),
   })
     .then((response) => {
+      console.log(response.status);
       if (response.status === 400) {
         throw new Error("빈칸을 채워주세요.");
       } else if (response.status === 401) {
@@ -68,8 +71,7 @@ const getDataTranslate = (whichOne, changeValue) => {
     })
     .then((funcData) => (changeValue.value = funcData.text))
     .catch((error) => {
-      console.log(error);
-      alert("형식에 맞게 입력해주세요.");
+      alert(error);
     });
 };
 
@@ -86,6 +88,7 @@ const noteData = () => {
     }),
   })
     .then((response) => {
+      console.log(response.status);
       if (response.status === 400) {
         throw new Error("한국어 칸을 채워주세요.");
       } else if (response.status === 401) {
@@ -112,7 +115,7 @@ clickEnter(spSpace, saveBtn);
 
 window.addEventListener("load", () => {
  
-    if (!sessionStorage.getItem("access_token")) {
+    if (!sessionStorage.getItem("access_token") && sessionStorage.getItem("refresh_token") !== null) {
       //refresh_token api
       fetch(refreshUrl, {
         method: "post",
@@ -124,6 +127,7 @@ window.addEventListener("load", () => {
         }),
       })
         .then((res) => {
+          console.log(res.status);
           if (res.status === 422 || res.status === 500) {
             throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
           } else if (res.status === 200) {
@@ -145,6 +149,7 @@ window.addEventListener("load", () => {
             }),
           })
             .then((res) => {
+              console.log(response.status);
               if (res.status === 400) {
                 throw new Error("재로그인이 필요합니다.");
               } else if (res.status === 422 || res.status === 500) {
@@ -163,9 +168,8 @@ window.addEventListener("load", () => {
         .catch((error) => {
           alert(error);
         });
-    } else {
-
-    
+    } else{
+      
   }
 });
       //저장기능

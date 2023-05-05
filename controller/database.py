@@ -8,7 +8,12 @@ def __init__():
     print('DB connection established')
 
 def execute_sql(sql: str):
-    connection = pool.get_conn()
+    try:
+        connection = pool.get_conn()
+    except TimeoutError:
+        pool.init()
+        connection = pool.get_conn()
+
     cur = connection.cursor()
     def get(sql):
         cur.execute(sql)

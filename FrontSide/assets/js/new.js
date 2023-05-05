@@ -6,6 +6,7 @@ const Pw = document.querySelector("#Pw");
 const newBtn = document.querySelector("#newBtn");
 const inf = document.querySelector("#inf");
 
+var registerUrl = "http://35.212.150.195/api/user/register"
 //비번칸에서 엔터하면 가입 기능
 clickEnter(Pw, newBtn);
 
