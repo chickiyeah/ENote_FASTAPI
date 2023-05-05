@@ -50,7 +50,7 @@ let load = ()=>{
 
         outBtn.addEventListener("click", (e) => {
           e.preventDefault();
-          fetch("http://localhost:8000/api/user/logout", {
+          fetch("http://35.212.150.195/api/user/logout", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
