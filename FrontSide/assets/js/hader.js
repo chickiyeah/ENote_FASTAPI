@@ -70,7 +70,7 @@ let load = ()=>{
             .then((data) => {
               localStorage.clear();
               sessionStorage.clear();
-              alert("로그아웃 성공");
+              location.href = "/"
             })
             .catch((error) => {
               alert(error);
