@@ -8,7 +8,7 @@ try{
       method: "post",
       headers: {
         "Content-Type": "application/json",
-        Authorization: accessToken,
+        'Authorization': accessToken,
       },
       body: JSON.stringify({
         access_token: accessToken,

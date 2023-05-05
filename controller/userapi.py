@@ -315,6 +315,7 @@ class refresh_token(BaseModel):
     refresh_token: str
 
 async def verify_tokenb(req: Request):
+    print(req)
     try:
         token = req.headers["Authorization"] 
         # Verify the ID token while checking if the token is revoked by

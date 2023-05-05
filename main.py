@@ -15,11 +15,6 @@ from controller.database import __init__
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:8000",
-    "http://3.34.125.70:83",
-]
-
 app.add_middleware( 
     CORSMiddleware,
     allow_origins=["*"],

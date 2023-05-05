@@ -40,19 +40,33 @@
     color: #288CFF;
 }
 
+/* .custom_calendar_table tbody td.select_day {
+    text-align: center;
+    background-color: #fcf31d;
+    border-radius: 50%;
+    outline-offset: 3.2px;
+    outline: #0ca0fd solid 2px;
+} */
 .custom_calendar_table tbody td.select_day {
     text-align: center;
     background-color: #fcf31d;
     border-radius: 50%;
     outline-offset: 3.2px;
     outline: #0ca0fd solid 2px;
+    display: flex;
+    flex-direction: column;
+    line-height: 250%;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 0;
 }
 .custom_calendar_table tbody td span{
-    opacity: 0;
+    opacity:0;
 }
 .custom_calendar_table tbody td.select_day > span{
     font-weight:bold;
-    opacity: 1;
+    color:red;
+    opacity:1;
 }
 #calendarForm {
     margin: 100px 0;
@@ -61,3 +75,4 @@
 .custom_calendar_table {
     margin: auto;
 }
+
