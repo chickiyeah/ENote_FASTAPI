@@ -50,14 +50,14 @@ let load = ()=>{
 
         outBtn.addEventListener("click", (e) => {
           e.preventDefault();
-          fetch("http://35.212.150.195/api/user/logout", {
-            method: "post",
+          fetch("http://localhost:8000/api/user/logout", {
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: sessionStorage.getItem("access_token"),
+              'Authorization': sessionStorage.getItem("access_token"),
             },
             body: JSON.stringify({
-              access_token: sessionStorage.getItem("access_token"),
+              //access_token: sessionStorage.getItem("access_token"),
             }),
           })
             .then((response) => {

@@ -315,7 +315,6 @@ class refresh_token(BaseModel):
     refresh_token: str
 
 async def verify_tokenb(req: Request):
-    print(req)
     try:
         token = req.headers["Authorization"] 
         # Verify the ID token while checking if the token is revoked by
@@ -625,7 +624,7 @@ async def user_create(userdata: UserRegisterdata):
     return {"detail":"USER ADD SUCCESS"}    
 
 @userapi.post('/logout')
-async def user_logout(userdata: UserLogoutdata, authorized: bool = Depends(verify_tokenb)):
+async def user_logout(authorized: bool = Depends(verify_tokenb)):
     if authorized:
         res = await revoke_token(list(authorized)[1])
         return {"detail":"User Logout Successfully"}
