@@ -28,8 +28,8 @@ function detectLangFetch(textConten, translate) {
   })
     .then((response) => {
       if(response.status !== 200){
-        let detail_error =  json.detail
         response.json().then(json=>{
+          let detail_error =  json.detail
           if(detail_error.code === "ER001"){
             alert("번역할 텍스트를 찾을 수 없습니다.")
           }else if(detail_error.code === "ER002"){
@@ -92,9 +92,9 @@ const getDataTranslate = (whichOne, changeValue) => {
           }else if(detail_error.code === "ER013"){
             alert("로그인 후 이용해주시길 바랍니다.")
           }else if(detail_error.code === "ER014"){
-            console.log("재로그인이 필요합니다.")
+            alert("재로그인이 필요합니다.")
           }else if(detail_error.code === "ER015"){
-            console.log("재로그인이 필요합니다.")
+            alert("로그인 후 이용해주시길 바랍니다.")
           }else if(detail_error.code === "ER016"){
             alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
           }
@@ -136,15 +136,15 @@ const noteData = () => {
     }),
   })
     .then((response) => {
-      if(response.status !== 200){
+      if(response.status !== 201){
         response.json().then(json=>{
-          let detail_error = json.detail
+          let detail_error = json.detail;
           if(detail_error.code === "ER013"){
             alert("로그인 후 이용해주시길 바랍니다.")
           }else if(detail_error.code ==="ER014"){
             alert("재로그인이 필요합니다.")
           }else if(detail_error.code ==="ER015"){
-            alert("재로그인이 필요합니다.")
+            alert("로그인 후 이용해주시길 바랍니다.")
           }else if(detail_error.code ==="ER016"){
             alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
           }else if(detail_error.code ==="ER017"){

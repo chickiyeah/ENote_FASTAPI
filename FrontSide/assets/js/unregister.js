@@ -18,40 +18,58 @@ if (!sessionStorage.getItem("access_token") && sessionStorage.getItem("refresh_t
       refresh_token: sessionStorage.getItem("refresh_token"),
     }),
   })
-    .then((reas) => {
-      if (res.status === 422 || res.status === 500) {
-        throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-      } else if (res.status === 200) {
-        return res.json();
-      }
-    })
-    .then((data) => {
-      sessionStorage.setItem("access_token", data.access_token);
-      sessionStorage.setItem("user_id", data.id);
-      sessionStorage.setItem("refresh_token", data.refresh_token);
-      //verify token api
-      fetch(verifyUrl, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          access_token: sessionStorage.getItem("access_token"),
-        }),
-      })
-        .then((res) => {
-          if (res.status === 400) {
-            throw new Error("재로그인이 필요합니다.");
-          } else if (res.status === 422 || res.status === 500) {
-            throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-          } else {
-            return res.json();
+    .then((res) => {
+      if(res.status !== 200){
+        res.json().then(json=>{
+          let detail_error = json.detail
+          if(detail_error.code === "ER011"){
+            alert("해당 유저는 존재하지 않습니다.")
+          }else if(detail_error.code === "ER997"){
+            alert("재로그인이 필요합니다.")
+          }else if(detail_error.code === "ER998"){
+            alert("재로그인이 필요합니다.")
+          }else if(detail_error.code === "ER999"){
+            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
           }
         })
-        .then((data) => {
-          location.reload();
+      }else{
+        res.json().then(data=>{
+          sessionStorage.setItem("access_token", data.access_token);
+          sessionStorage.setItem("user_id", data.id);
+          sessionStorage.setItem("refresh_token", data.refresh_token);
+          //verify token api
+          fetch(verifyUrl, {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              access_token: sessionStorage.getItem("access_token"),
+            }),
+          })
+            .then((res) => {
+              if(res.status !== 200){
+                res.json().then(json=>{
+                  let detail_error = json.detail;
+                  if(detail_error.code === "ER011"){
+                    alert("해당 유저는 존재하지 않습니다.")
+                  }else if(detail_error.code === "ER997"){
+                    alert("재로그인이 필요합니다.")
+                  }else if(detail_error.code === "ER998"){
+                    alert("재로그인이 필요합니다.")
+                  }else if(detail_error.code === "ER999"){
+                    alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+                  }
+                })
+              }else{
+                res.json().then(data=>{
+                  location.reload();
+                })
+              }
+            })
+            .catch((error) => alert(error));
         })
-        .catch((error) => alert(error));
+      }
     })
     .catch((error) => {
       alert(error);
@@ -77,15 +95,26 @@ if (!sessionStorage.getItem("access_token") && sessionStorage.getItem("refresh_t
           }),
         })
           .then((res) => {
-            if (res.status === 400) {
-              throw new Error("비밀번호를 제대로 입력해주세요.");
-            } else if (res.status === 422 || 500) {
-              throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-            } else if (res.status === 200) {
-              return res.json();
-            }
-          })
-          .then((data) => {
+            if (res.status !== 200) {
+              res.json().then(json => {
+                //하나만 만들어줄게요
+                //감사합니다.
+                let detail_error = json.detail
+                if (detail_error.code == "ER012") {
+                  alert("이메일 인증이 필요합니다.")
+                }else if(detail_error.code == "ER003"){ 
+                  alert("이메일을 입력해주세요.")
+                }else if(detail_error.code === "ER004"){
+                  alert("비밀번호를 입력해주세요.")
+                }else if(detail_error.code === "ER008"){
+                  alert("이메일을 다시 확인해주세요.")
+                }else if(detail_error.code === "ER009"){
+                  alert("비밀번호가 일치하지 않습니다.")
+                }
+                console.log(json)
+              })
+            }else{
+              res.json().then(data=>{
             //api 들고 와서 탈퇴하기
             fetch(deleteUrl, {
               method: "delete",
@@ -112,6 +141,8 @@ if (!sessionStorage.getItem("access_token") && sessionStorage.getItem("refresh_t
               .catch((error) => {
                 alert(error);
               });
+              })
+            }
           })
           .catch((error) => {
             alert(error);

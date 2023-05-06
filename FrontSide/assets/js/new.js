@@ -43,19 +43,31 @@ newBtn.addEventListener("click", () => {
       }),
     })
       .then((response) => {
-        if (response.status == 400) {
-          throw new Error("중복된 이메일입니다.");
-        } else if (response.status == 422) {
-          throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-        } else if (response.status === 500) {
-          throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-        } else if (response.status === 201) {
-          return response.json();
+        if(response.status !== 200){
+          response.json().then(json=>{
+            let detail_error = json.detail;
+            if(detail_error.code == "ER003"){ 
+              alert("이메일을 입력해주세요.")
+            }else if(detail_error.code === "ER004"){
+              alert("비밀번호를 입력해주세요.")
+            }else if(detail_error.code == "ER005"){ 
+              alert("비밀번호 6자리 이상 설정해주세요.")
+            }else if(detail_error.code === "ER006"){
+              alert("비밀번호에 연속된 문자가 많습니다.")
+            }else if(detail_error.code == "ER007"){ 
+              alert("닉네임을 입력해주세요.")
+            }else if(detail_error.code === "ER008"){
+              alert("아이디는 이메일 형식에 맞춰주세요.")
+            }else if(detail_error.code === "ER010"){
+              alert("사용 중인 아이디입니다.")
+            }
+          })
+        }else{
+          response.json().then(data=>{
+            alert("회원가입이 완료되었습니다. 이메일 인증 후 로그인해주세요.");
+            // location.href = "/login";
+          })
         }
-      })
-      .then((data) => {
-        alert("회원가입이 완료되었습니다. 이메일 인증 후 로그인해주세요.");
-        location.href = "/login";
       })
       .catch((error) => {
         alert(error);

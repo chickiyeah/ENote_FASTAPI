@@ -27,39 +27,57 @@ window.addEventListener("load", (e) => {
       }),
     })
       .then((res) => {
-        if (res.status === 422 || res.status === 500) {
-          throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-        } else if (res.status === 200) {
-          return res.json();
-        }
-      })
-      .then((data) => {
-        sessionStorage.setItem("access_token", data.access_token);
-        sessionStorage.setItem("user_id", data.id);
-        sessionStorage.setItem("refresh_token", data.refresh_token);
-        //verify token api
-        fetch(verifyUrl, {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            access_token: sessionStorage.getItem("access_token"),
-          }),
-        })
-          .then((res) => {
-            if (res.status === 400) {
-              throw new Error("재로그인이 필요합니다.");
-            } else if (res.status === 422 || res.status === 500) {
-              throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
-            } else if (res.status === 200) {
-              return res.json();
+        if(res.status !== 200){
+          res.json().then(json=>{
+            let detail_error = json.detail
+            if(detail_error.code === "ER011"){
+              alert("해당 유저는 존재하지 않습니다.")
+            }else if(detail_error.code === "ER997"){
+              alert("재로그인이 필요합니다.")
+            }else if(detail_error.code === "ER998"){
+              alert("재로그인이 필요합니다.")
+            }else if(detail_error.code === "ER999"){
+              alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
             }
           })
-          .then((data) => {
-            console.log(data);
+        }else{
+          res.json().then((data)=>{
+            sessionStorage.setItem("access_token", data.access_token);
+            sessionStorage.setItem("user_id", data.id);
+            sessionStorage.setItem("refresh_token", data.refresh_token);
+            //verify token api
+            fetch(verifyUrl, {
+              method: "post",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                access_token: sessionStorage.getItem("access_token"),
+              }),
+            })
+              .then((res) => {
+                if(res.status !== 200){
+                  res.json().then(json=>{
+                    let detail_error = json.detail;
+                    if(detail_error.code === "ER011"){
+                      alert("해당 유저는 존재하지 않습니다.")
+                    }else if(detail_error.code === "ER997"){
+                      alert("재로그인이 필요합니다.")
+                    }else if(detail_error.code === "ER998"){
+                      alert("재로그인이 필요합니다.")
+                    }else if(detail_error.code === "ER999"){
+                      alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+                    }
+                  })
+                }else{
+                  res.json().then(data=>{
+                    console.log(data);
+                  })
+                }
+              })
+              .catch((error) => alert(error));
           })
-          .catch((error) => alert(error));
+        }
       })
       .catch((error) => {
         alert(error);
@@ -82,47 +100,65 @@ window.addEventListener("load", (e) => {
       ]),
     })
       .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        category.value = localStorage.getItem("category_name")
-        const categoryName = data.data.map((x, i) => {
-          return data.data[i].Category;
-        });
-        console.log(categoryName);
-        var detailIndices = [];
-        var detailIdx = categoryName.indexOf(
-          localStorage.getItem("category_name")
-        );
-        while (detailIdx != -1) {
-          detailIndices.push(detailIdx);
-          detailIdx = categoryName.indexOf(
-            localStorage.getItem("category_name"),
-            detailIdx + 1
-          );
+        if(res.status !== 200){
+          res.json().then(json=>{
+            let detail_error = json.detail;
+            if(detail_error.code === "ER013"){
+              alert("로그인 후 이용해주시길 바랍니다.")
+            }else if(detail_error.code ==="ER014"){
+              alert("재로그인이 필요합니다.")
+            }else if(detail_error.code ==="ER015"){
+              alert("로그인 후 이용해주시길 바랍니다.")
+            }else if(detail_error.code ==="ER016"){
+              alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+            }else if(detail_error.code ==="ER017"){
+              alert("한국어 칸을 채워주세요.")
+            }else if(detail_error.code ==="ER018"){
+              alert("영어 칸을 채워주세요.")
+            }
+          })
+        }else{
+          res.json().then(data=>{
+            console.log(data);
+            category.value = localStorage.getItem("category_name")
+            const categoryName = data.data.map((x, i) => {
+              return data.data[i].Category;
+            });
+            console.log(categoryName);
+            var detailIndices = [];
+            var detailIdx = categoryName.indexOf(
+              localStorage.getItem("category_name")
+            );
+            while (detailIdx != -1) {
+              detailIndices.push(detailIdx);
+              detailIdx = categoryName.indexOf(
+                localStorage.getItem("category_name"),
+                detailIdx + 1
+              );
+            }
+            console.log(detailIndices);
+            const cN = [];
+            for (i = 0; i < detailIndices.length; i++) {
+              cN.push(data.data[detailIndices[i]]);
+            }
+            console.log(cN);
+            const dataAll = cN
+              .map(
+                (x, i) =>
+                  "<div class='txt-box'><p>" +
+                  cN[i].Korean +
+                  "</p><p>" +
+                  cN[i].English +
+                  "</p><p>" +
+                  cN[i].Speak +
+                  "</p><a href='#'><i class='fa-regular fa-pen-to-square' onclick='editDetail(this)'></i></a></div>"
+              )
+              .join("");
+            txtGroup.innerHTML =
+              "<div class='txt-tit'><p>한국어</p><p>영어</p><p>발음</p><div></div></div>" +
+              dataAll;
+          })
         }
-        console.log(detailIndices);
-        const cN = [];
-        for (i = 0; i < detailIndices.length; i++) {
-          cN.push(data.data[detailIndices[i]]);
-        }
-        console.log(cN);
-        const dataAll = cN
-          .map(
-            (x, i) =>
-              "<div class='txt-box'><p>" +
-              cN[i].Korean +
-              "</p><p>" +
-              cN[i].English +
-              "</p><p>" +
-              cN[i].Speak +
-              "</p><a href='#'><i class='fa-regular fa-pen-to-square' onclick='editDetail(this)'></i></a></div>"
-          )
-          .join("");
-        txtGroup.innerHTML =
-          "<div class='txt-tit'><p>한국어</p><p>영어</p><p>발음</p><div></div></div>" +
-          dataAll;
       })
       .catch((error) => {
         console.log(error);
@@ -177,50 +213,73 @@ function detailUpdate(me) {
     ]),
   })
     .then((res) => {
-      return res.json();
-    })
-    .then((data) => {
-      console.log(data);
-      const detailEnglishAll = data.data.map((x, i) => {
-        return data.data[i].English;
-      });
-      const matchEnglish = detailEnglishAll.indexOf(enDetail1.value);
-      console.log(detailEnglishAll);
-      const bodyCreated_At = data.data[matchEnglish].Created_At;
-      console.log(bodyCreated_At);
-
-      fetch("http://35.212.150.195/api/note/update", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: sessionStorage.getItem("access_token"),
-        },
-        body: JSON.stringify({
-          Korean: koDetail1.value,
-          English: enDetail1.value,
-          Speak: spDetail1.value,
-          Created_At: bodyCreated_At
-            .split("-")
-            .join(",")
-            .split("T")
-            .join(",")
-            .split(":")
-            .join(",")
-            .split(".000Z")
-            .join(""),
-          Category: localStorage.getItem("category_name"),
-        }),
-      })
-        .then((res) => {
-          return res.json();
+      if(res.status !== 200){
+        res.json().then(json=>{
+          let detail_error = json.detail;
+          if(detail_error.code === "ER013"){
+            alert("로그인 후 이용해주시길 바랍니다.")
+          }else if(detail_error.code ==="ER014"){
+            alert("재로그인이 필요합니다.")
+          }else if(detail_error.code ==="ER015"){
+            alert("로그인 후 이용해주시길 바랍니다.")
+          }else if(detail_error.code ==="ER016"){
+            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+          }else if(detail_error.code ==="ER017"){
+            alert("한국어 칸을 채워주세요.")
+          }else if(detail_error.code ==="ER018"){
+            alert("영어 칸을 채워주세요.")
+          }else if(detail_error.code ==="ER019"){
+            //날짜값 틀림
+            alert("오류가 발생했습니다. 관리자에게 문의해주세요.")
+          }else if(detail_error.code ==="ER020"){
+            alert("데이터가 존재하지 않습니다.")
+          }
         })
-        .then((data) => {
-          alert("수정완료");
-          location.reload();
+      }else{
+        res.json().then(data=>{
+          console.log(data);
+          const detailEnglishAll = data.data.map((x, i) => {
+            return data.data[i].English;
+          });
+          const matchEnglish = detailEnglishAll.indexOf(enDetail1.value);
+          console.log(detailEnglishAll);
+          const bodyCreated_At = data.data[matchEnglish].Created_At;
+          console.log(bodyCreated_At);
+    
+          fetch("http://35.212.150.195/api/note/update", {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: sessionStorage.getItem("access_token"),
+            },
+            body: JSON.stringify({
+              Korean: koDetail1.value,
+              English: enDetail1.value,
+              Speak: spDetail1.value,
+              Created_At: bodyCreated_At
+                .split("-")
+                .join(",")
+                .split("T")
+                .join(",")
+                .split(":")
+                .join(",")
+                .split(".000Z")
+                .join(""),
+              Category: localStorage.getItem("category_name"),
+            }),
+          })
+            .then((res) => {
+              return res.json();
+            })
+            .then((data) => {
+              alert("수정완료");
+              location.reload();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         })
-        .catch((error) => {
-          console.log(error);
-        });
+      }
     })
     .catch((error) => {
       console.log(error);
@@ -248,45 +307,77 @@ function detailDelete(me) {
     ]),
   })
     .then((res) => {
-      return res.json();
-    })
-    .then((data) => {
-      console.log(data);
-      const detailEnglishAll = data.data.map((x, i) => {
-        return data.data[i].English;
-      });
-      const matchEnglish = detailEnglishAll.indexOf(enDetail1.value);
-      const bodyCreated_At = data.data[matchEnglish].Created_At;
-
-      fetch(noteUpdateUrl, {
-        method: "delete",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: sessionStorage.getItem("access_token"),
-        },
-        body: JSON.stringify({
-          Created_At: bodyCreated_At
-            .split("-")
-            .join(",")
-            .split("T")
-            .join(",")
-            .split(":")
-            .join(",")
-            .split(".000Z")
-            .join(""),
-        }),
-      })
-        .then((res) => {
-          return res.json();
+      if(res.status !== 200){
+        res.json().then(json=>{
+          let detail_error = json.detail;
+          if(detail_error.code === "ER013"){
+            alert("로그인 후 이용해주시길 바랍니다.")
+          }else if(detail_error.code ==="ER014"){
+            alert("재로그인이 필요합니다.")
+          }else if(detail_error.code ==="ER015"){
+            alert("로그인 후 이용해주시길 바랍니다.")
+          }else if(detail_error.code ==="ER016"){
+            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+          }else if(detail_error.code ==="ER017"){
+            alert("한국어 칸을 채워주세요.")
+          }else if(detail_error.code ==="ER018"){
+            alert("영어 칸을 채워주세요.")
+          }
         })
-        .then((data) => {
+      }else{
+        res.json().then(data=>{
           console.log(data);
-          alert("삭제가 완료되었습니다.");
-          location.reload();
+          const detailEnglishAll = data.data.map((x, i) => {
+            return data.data[i].English;
+          });
+          const matchEnglish = detailEnglishAll.indexOf(enDetail1.value);
+          const bodyCreated_At = data.data[matchEnglish].Created_At;
+    
+          fetch(noteUpdateUrl, {
+            method: "delete",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: sessionStorage.getItem("access_token"),
+            },
+            body: JSON.stringify({
+              Created_At: bodyCreated_At
+                .split("-")
+                .join(",")
+                .split("T")
+                .join(",")
+                .split(":")
+                .join(",")
+                .split(".000Z")
+                .join(""),
+            }),
+          })
+            .then((res) => {
+              if(res.status !== 200){
+                res.json().then(json=>{
+                  let detail_error = json.detail;
+                  if(detail_error.code === "ER013"){
+                    alert("로그인 후 이용해주시길 바랍니다.")
+                  }else if(detail_error.code ==="ER014"){
+                    alert("재로그인이 필요합니다.")
+                  }else if(detail_error.code ==="ER015"){
+                    alert("로그인 후 이용해주시길 바랍니다.")
+                  }else if(detail_error.code ==="ER016"){
+                    alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+                  }
+                })
+              }else{
+                res.json().then(data=>{
+                  console.log(data);
+                alert("삭제가 완료되었습니다.");
+                location.reload();
+                })
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         })
-        .catch((error) => {
-          console.log(error);
-        });
+      }
     })
     .catch((error) => {
       console.log(error);

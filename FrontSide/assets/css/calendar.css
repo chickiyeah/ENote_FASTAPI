@@ -63,7 +63,7 @@
 .custom_calendar_table tbody td span{
     opacity:0;
 }
-.custom_calendar_table tbody td.select_day > span{
+.custom_calendar_table tbody td > span{
     font-weight:bold;
     color:red;
     opacity:1;
