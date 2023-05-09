@@ -25,9 +25,29 @@ window.addEventListener("load", (e) => {
         refresh_token: sessionStorage.getItem("refresh_token"),
       }),
     })
-      .then((reas) => {
-        if (res.status === 422 || res.status === 500) {
-          throw new Error("오류가 발생했습니다. 관리자에게 문의해주세요.");
+      .then((res) => {
+        if (res.status != 200) {
+          res.json().then(json=>{
+            let detail_error = json.detail;
+            if(detail_error.code === "ER013"){
+              alert("로그인 후 이용해주시길 바랍니다.")
+              location.href = "/login"
+            }else if(detail_error.code ==="ER014"){
+              alert("재로그인이 필요합니다.")
+              location.href = "/login"
+            }else if(detail_error.code ==="ER015"){
+              alert("로그인 후 이용해주시길 바랍니다.")
+              location.href = "/login"
+            }else if(detail_error.code ==="ER016"){
+              alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+              location.href = "/login"
+            }else{
+              console.log(detail_error)
+              throw new Error("정의되지 않은 오류가 발생했습니다. 관리자에게 문의해주세요.");
+            }
+          }
+        )
+          
         } else if (res.status === 200) {
           return res.json();
         }

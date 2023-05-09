@@ -113,12 +113,16 @@ window.addEventListener("load", (e) => {
             let detail_error = json.detail;
             if(detail_error.code === "ER013"){
               alert("로그인 후 이용해주시길 바랍니다.")
+              location.href = "/login"
             }else if(detail_error.code ==="ER014"){
               alert("재로그인이 필요합니다.")
+              location.href = "/login"
             }else if(detail_error.code ==="ER015"){
               alert("로그인 후 이용해주시길 바랍니다.")
+              location.href = "/login"
             }else if(detail_error.code ==="ER016"){
               alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+              location.href = "/login"
             }else if(detail_error.code ==="ER017"){
               alert("한국어 칸을 채워주세요.")
             }else if(detail_error.code ==="ER018"){

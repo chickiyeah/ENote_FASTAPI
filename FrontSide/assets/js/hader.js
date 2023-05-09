@@ -78,4 +78,5 @@ let load = ()=>{
         });
     }
 }
+
 window.onload(load());
