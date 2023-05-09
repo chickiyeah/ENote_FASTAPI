@@ -43,8 +43,8 @@ window.addEventListener("load", (e) => {
               location.href = "/login"
             }else{
               console.log(detail_error)
-              alert("정의되지 않은 오류가 발생했습니다. 관리자에게 문의해주세요.")
-              location.href = "/"
+              alert("로그인이 필요합니다.")
+              location.href = "/login"
               throw new Error("정의되지 않은 오류가 발생했습니다. 관리자에게 문의해주세요.");
             }
           }
@@ -80,10 +80,8 @@ window.addEventListener("load", (e) => {
           .then((data) => {
             location.reload();
           })
-          .catch((error) => alert(error));
       })
       .catch((error) => {
-        alert(error);
       });
   } else {
     fetch("http://35.212.150.195/api/note/get_all", {
