@@ -26,7 +26,5 @@ def execute_sql(sql:str):
             res = edit(sql)
 
         con.close()
-        
-        print(res)
 
         return res
