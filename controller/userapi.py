@@ -281,7 +281,7 @@ class LoginResponse(BaseModel):
 class RegisterResponse(BaseModel):
     detail: str
 
-class verify_token(BaseModel):
+class verify_token_class(BaseModel):
     access_token: str
 
 class verify_token_res(BaseModel):
@@ -405,7 +405,7 @@ async def refresh_token(token: refresh_token, requset: Request):
         raise HTTPException(401, login_ip_diffrent)
 
 @userapi.post("/verify_token", response_model=verify_token_res, responses=token_verify_responses)
-async def verify_token(token: verify_token):
+async def verify_token(token: verify_token_class):
 
     try:
         usertoken = token.access_token
@@ -504,7 +504,7 @@ async def user_login(userdata: UserLogindata, request: Request):
             raise HTTPException(status_code=400, detail=User_Disabled)
 
     currentuser = Auth.current_user
-    userjson = execute_sql("SELECT * FROM Users WHERE ID = \"%s\"" % currentuser['localId'])[0]
+    userjson= execute_sql("SELECT * FROM Users WHERE ID = \"%s\"" % currentuser['localId'])[0]
     
     userjson['access_token'] = currentuser['idToken']
     userjson['refresh_token'] = currentuser['refreshToken']
