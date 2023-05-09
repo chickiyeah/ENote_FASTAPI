@@ -28,6 +28,7 @@ def execute_sql(sql: str):
     else:
         res = edit(sql)
     
-    pool.release(connection)
+    connection.close()
+    pool.release(connetion)
 
     return res
