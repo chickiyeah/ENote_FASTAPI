@@ -15,7 +15,7 @@ let load = ()=>{
      */
     // console.log(atoken)
     if (atoken == null) {
-        console.log(atoken == null)
+        console.log("No token")
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/login">로그인</a></li>`)
         profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="/login"><i class="fa-solid fa-right-to-bracket"></i></a></p>`)
         $(function () {
