@@ -69,6 +69,8 @@ logBtn.addEventListener("click", () => {
               alert("이메일을 다시 확인해주세요.")
             }else if(detail_error.code === "ER009"){
               alert("비밀번호가 일치하지 않습니다.")
+            }else if(detail_error.code === "ER999"){
+              alert("이메일을 다시 확인해주세요.")
             }
             console.log(json)
           })
