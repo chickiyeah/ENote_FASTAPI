@@ -47,6 +47,16 @@ nav .profile>.profile-hide {
     border-radius: 20px;
 }
 
+header .burgerd-hide {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    padding: 20px 45px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 20px;
+}
+
 nav .profile>.profile-hide::before {
     content: '';
     position: absolute;
