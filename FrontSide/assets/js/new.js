@@ -43,7 +43,7 @@ newBtn.addEventListener("click", () => {
       }),
     })
       .then((response) => {
-        if(response.status !== 200){
+        if(response.status !== 201){
           response.json().then(json=>{
             let detail_error = json.detail;
             if(detail_error.code == "ER003"){ 
@@ -65,7 +65,7 @@ newBtn.addEventListener("click", () => {
         }else{
           response.json().then(data=>{
             alert("회원가입이 완료되었습니다. 이메일 인증 후 로그인해주세요.");
-            // location.href = "/login";
+            location.href = "/login";
           })
         }
       })
