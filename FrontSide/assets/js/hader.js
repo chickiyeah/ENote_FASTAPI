@@ -19,13 +19,6 @@ let load = ()=>{
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/login">로그인</a></li>`)
         profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="/login"><i class="fa-solid fa-right-to-bracket"></i></a></p>`)
         $(function () {
-          // 프로필 토글
-          $(".profile-hide").hide();
-          $(".profile>p").click(function (e) {
-            console.log(0);
-            e.preventDefault();
-            $(this).next().slideToggle("fast");
-          });
           // 햄버거 토글
           $(".burgerd-hide").hide();
           $(".burger").click(function (e) {
