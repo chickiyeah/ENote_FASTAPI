@@ -43,6 +43,8 @@ window.addEventListener("load", (e) => {
               location.href = "/login"
             }else{
               console.log(detail_error)
+              alert("정의되지 않은 오류가 발생했습니다. 관리자에게 문의해주세요.")
+              location.href = "/"
               throw new Error("정의되지 않은 오류가 발생했습니다. 관리자에게 문의해주세요.");
             }
           }
