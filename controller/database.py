@@ -11,23 +11,19 @@ def execute_sql(sql:str):
     global pool1
     con = pool1.get_connection()
     cursor = con.cursor(cursors.DictCursor)
-    with con as cur:
+    with cursor as cur:
 
         def get(sql):
-            cursor.execute(sql)
+            cur.execute(sql)
             con.close()
-            return cursor.fetchall()
+            return cur.fetchall()
         
         def edit(sql):
-            res = cursor.execute(sql)
+            res = cur.execute(sql)
             con.close()
             return res
 
         if "SELECT" in sql or "select" in sql:
-            res = get(sql)
+            get(sql)
         else:
-            res = edit(sql)
-
-        
-
-        return res
+            edit(sql)
