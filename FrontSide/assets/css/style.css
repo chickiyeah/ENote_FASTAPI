@@ -7,6 +7,7 @@ header nav .profile {
 .burger {
     display: none;
     cursor: pointer;
+    z-index: 100;
 }
 
 .burger div {
@@ -16,6 +17,7 @@ header nav .profile {
     margin: 5px;
     transition: all 0.5s;
     border-radius: 3px;
+    z-index: 101;
 }
 
 .toggle .line1 {
@@ -38,16 +40,6 @@ nav .profile {
 }
 
 nav .profile>.profile-hide {
-    position: absolute;
-    top: 30px;
-    right: 40px;
-    padding: 20px 45px;
-    border: 1px solid #ccc;
-    background: #fff;
-    border-radius: 20px;
-}
-
-header .burgerd-hide {
     position: absolute;
     top: 30px;
     right: 40px;

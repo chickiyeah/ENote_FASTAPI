@@ -16,7 +16,11 @@ let load = ()=>{
     // console.log(atoken)
     if (atoken == null) {
         console.log("No token")
-        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/login">로그인</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/" style="position:absolute;top:7rem;left:3rem">기록하기</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/storybook" style="position:absolute;top:9rem;left:3rem">스토리북</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/word" style="position:absolute;top:11rem;left:3rem">단어카드</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/calender" style="position:absolute;top:13rem;left:3rem">캘린더</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/login" style="position:absolute;top:19rem;left:3rem">로그인</a></li>`)
         profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="/login"><i class="fa-solid fa-right-to-bracket"></i></a></p>`)
         $(function () {
           // 햄버거 토글
@@ -24,7 +28,7 @@ let load = ()=>{
           $(".burger").click(function (e) {
             console.log(0);
             e.preventDefault();
-            $(this).next().slideToggle("fast");
+            $(this).next().slideToggle("slide");
           });
           // 스토리북 토글
           $(".story-hide").hide();
@@ -40,11 +44,13 @@ let load = ()=>{
         return
     }else{
         //node = document.createElement("")
-        burgerd.insertAdjacentHTML('beforeend', `
-        <li><a href="/mypage">내계정</a></li>
-        <li><a href="/mypage/unregister">탈퇴하기</a></li>
-        <li id="logOutBtn1"><a href="#">로그아웃</a></li> 
-        `)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/" style="position:absolute;top:7rem;left:3rem">기록하기</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/storybook" style="position:absolute;top:9rem;left:3rem">스토리북</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/word" style="position:absolute;top:11rem;left:3rem">단어카드</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/calender" style="position:absolute;top:13rem;left:3rem">캘린더</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/mypage" style="position:absolute;top:19rem;left:3rem">내계정</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/mypage/unregister" style="position:absolute;top:21rem;left:3rem">탈퇴하기</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li id="logOutBtn1"><a href="#" style="position:absolute;top:25rem;left:3rem">로그아웃</a></li>`)
         profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="#">${nickname.slice(0,1)}</a></p>
         <ul class="profile-hide"> 
             <li><a href="/mypage">내계정</a></li>
