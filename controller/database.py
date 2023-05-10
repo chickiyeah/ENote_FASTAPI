@@ -15,12 +15,20 @@ def execute_sql(sql:str):
 
         def get(sql):
             cur.execute(sql)
-            con.close()
+            try:
+                con.close()
+            except pymysqlpool.ReturnConnectionToPoolError:
+                "no"
+
             return cur.fetchall()
         
         def edit(sql):
             res = cur.execute(sql)
-            con.close()
+            try:
+                con.close()
+            except pymysqlpool.ReturnConnectionToPoolError:
+                "no"
+                
             return res
 
         if "SELECT" in sql or "select" in sql:
