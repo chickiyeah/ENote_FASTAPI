@@ -9,7 +9,9 @@ def __init__():
 
 def execute_sql(sql:str):
     global pool1
-    con = pool1.get_connection().cursor(cursors.DictCursor)
+    con = pool1.get_connection()
+    cur = con.cursor(cursors.DictCursor)
+    con.close()
     with con as cur:
 
         def get(sql):
@@ -25,6 +27,6 @@ def execute_sql(sql:str):
         else:
             res = edit(sql)
 
-        con.close()
+        
 
         return res
