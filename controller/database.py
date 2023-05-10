@@ -16,7 +16,7 @@ def execute_sql(sql:str):
         def get(sql):
             cursor.execute(sql)
             con.close()
-            return cur.fetchall()
+            return cursor.fetchall()
         
         def edit(sql):
             res = cursor.execute(sql)
