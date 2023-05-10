@@ -5,7 +5,7 @@ config ={'host':'database-1.cedn2xc6oolp.ap-northeast-2.rds.amazonaws.com','port
 
 def __init__():
     global pool1
-    pool1 = pymysqlpool.ConnectionPool(size=20, maxsize= 100, pre_create_num=20, name='pool1', **config)
+    pool1 = pymysqlpool.ConnectionPool(size=2, maxsize= 20, pre_create_num=2, name='pool1', **config)
 
 def execute_sql(sql:str):
     global pool1
