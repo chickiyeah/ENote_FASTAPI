@@ -10,16 +10,16 @@ def __init__():
 def execute_sql(sql:str):
     global pool1
     con = pool1.get_connection()
-    cur = con.cursor(cursors.DictCursor)
+    cursor = con.cursor(cursors.DictCursor)
     with con as cur:
 
         def get(sql):
-            cur.execute(sql)
+            cursor.execute(sql)
             con.close()
             return cur.fetchall()
         
         def edit(sql):
-            res = cur.execute(sql)
+            res = cursor.execute(sql)
             con.close()
             return res
 
