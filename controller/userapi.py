@@ -505,7 +505,7 @@ async def user_login(userdata: UserLogindata, request: Request):
 
     currentuser = Auth.current_user
     try:
-        userjson= execute_sql("SELECT * FROM Users WHERE ID = \"%s\"" % currentuser['localId'])[0]
+        userjson= execute_sql("SELECT * FROM Users WHERE id = \"%s\"" % currentuser['localId'])[0]
     except TypeError:
         raise HTTPException(400, Invaild_Email)
     
