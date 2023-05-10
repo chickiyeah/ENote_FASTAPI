@@ -19,7 +19,7 @@ let load = ()=>{
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/" style="position:absolute;top:7rem;left:3rem">기록하기</a></li>`)
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/storybook" style="position:absolute;top:9rem;left:3rem">스토리북</a></li>`)
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/word" style="position:absolute;top:11rem;left:3rem">단어카드</a></li>`)
-        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/calender" style="position:absolute;top:13rem;left:3rem">캘린더</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/calendar" style="position:absolute;top:13rem;left:3rem">캘린더</a></li>`)
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/login" style="position:absolute;top:19rem;left:3rem">로그인</a></li>`)
         profile.insertAdjacentHTML('beforeend',`<p id="logProfile"><a href="/login"><i class="fa-solid fa-right-to-bracket"></i></a></p>`)
         $(function () {
@@ -47,7 +47,7 @@ let load = ()=>{
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/" style="position:absolute;top:7rem;left:3rem">기록하기</a></li>`)
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/storybook" style="position:absolute;top:9rem;left:3rem">스토리북</a></li>`)
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/word" style="position:absolute;top:11rem;left:3rem">단어카드</a></li>`)
-        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/calender" style="position:absolute;top:13rem;left:3rem">캘린더</a></li>`)
+        burgerd.insertAdjacentHTML('beforeend', `<li><a href="/calendar" style="position:absolute;top:13rem;left:3rem">캘린더</a></li>`)
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/mypage" style="position:absolute;top:19rem;left:3rem">내계정</a></li>`)
         burgerd.insertAdjacentHTML('beforeend', `<li><a href="/mypage/unregister" style="position:absolute;top:21rem;left:3rem">탈퇴하기</a></li>`)
         burgerd.insertAdjacentHTML('beforeend', `<li id="logOutBtn1"><a href="#" style="position:absolute;top:25rem;left:3rem">로그아웃</a></li>`)
