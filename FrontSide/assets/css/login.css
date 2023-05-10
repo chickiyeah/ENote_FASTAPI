@@ -52,7 +52,7 @@ main .join-group .input-box .user-info label {
 }
 
 main .join-group .input-box .user-info input {
-    width: 100%;
+    width: 90%;
     height: 50px;
     line-height: 50px;
     border: 1px solid #CACACA;
@@ -62,7 +62,7 @@ main .join-group .input-box .user-info input {
 }
 
 main .join-group .input-box .btn-box {
-    width: 100%;
+    width: 95%;
     margin: auto;
 }
 

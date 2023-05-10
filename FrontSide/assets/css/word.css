@@ -37,6 +37,8 @@ main .word-group .word-box .bg p {
     transform: translate(-50%, -40%);
     font-size: 40px;
     font-weight: 700;
+    width:80%;
+    text-align: center;
 }
 
 main .word-group .word-box .bg .input-group {
