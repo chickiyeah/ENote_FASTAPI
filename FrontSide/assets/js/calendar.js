@@ -106,7 +106,7 @@ function calendarMaker(target, date) {
       tag += "<tr>";
     }
 
-    tag += "<td>" + i + "<span></span></td>";
+    tag += "<td>" + i + "<span class='date'></span></td>";
     cnt++;
     if (cnt % 7 == 0) {
       tag += "</tr>";
@@ -168,6 +168,9 @@ function calendarMaker(target, date) {
     $(".custom_calendar_table").on("click", "td", function () {
       $(".custom_calendar_table .select_day").removeClass("select_day");
       $(this).removeClass("select_day").addClass("select_day");
+      $(".custom_calendar_table td:not([select_day]) .date").hide()
+      $(".custom_calendar_table .select_day .date").show()
+
       const dateCategoryYear = $("#yearContent").text();
       const dateCategoryMonth = $("#monContent").text().padStart(2, "0");
       const dateCategoryDay = this.textContent.padStart(2, "0");
@@ -207,6 +210,7 @@ function calendarMaker(target, date) {
               });
               var madeLength = dateCalendar.filter((x) => x === yearMonthDay);
               console.log(madeLength.length);
+              
               if (madeLength.length <= 0) {
               } else {
                 $(this).children().html(madeLength.length);
