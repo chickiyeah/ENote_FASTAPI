@@ -222,6 +222,7 @@ main .btn-group button:first-child a{
     height:100%;
     color: #fff;
     font-size:12px;
+    word-break: keep-all;
 }
 
 main .btn-group button:last-child {
@@ -284,8 +285,59 @@ footer .right-box p {
 }
 
 @media all and (max-width:1024px) {
-    nav>ul>li {
+
+    header nav>ul {
         display: none;
+    }
+    
+    .left-box .info-group>p {
+        display: none;
+    }
+    
+    .right-box>p {
+        display: none;
+    }
+
+    main .input-group .input-box label {
+        margin-bottom: 10px;
+    }
+
+    main .input-group .input-box input {
+        padding: 17px 17px;
+    }
+
+    main .input-group .input-box label,
+    main .input-group .input-box input {
+        width: 90%;
+    }
+
+    main .btn-group {
+        width: 80%;
+        flex-direction: column;
+    }
+
+    main .btn-group button {
+        width: 60%;
+    }
+
+    main .btn-group button:first-child {
+        margin-bottom: 10px;
+    }
+
+    header nav .profile {
+        display: none;
+    }
+
+    .burger {
+        display: block;
+    }
+
+    .left-box>ul>li {
+        display: none;
+    }
+
+    .left-box .copy-txt>p {
+        text-align: center;
     }
 }
 
