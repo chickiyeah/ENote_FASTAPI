@@ -1,3 +1,5 @@
+//카테고리 바꾸기
+
 const txtGroup = document.querySelector(".txt-group");
 const txtTit = document.querySelector(".txt-tit");
 const txtBox = document.querySelector(".txt-box");
@@ -8,14 +10,18 @@ var getAllUrl = "http://35.212.150.195/api/note/get_all";
 var refreshUrl = "http://35.212.150.195/api/user/refresh_token";
 var verifyUrl = "http://35.212.150.195/api/user/verify_token";
 var noteUpdateUrl = "http://35.212.150.195/api/note/update";
+var noteDeleteUrl = "http://35.212.150.195/api/note/delete";
 var loadListName = localStorage.getItem("category_name");
 //단어 데이터 리스트 나오게 하기
 //해당 카테고리에 해당하는 단어 나오게 하기 //이건 카테고리가 없음
 //카테고리 이름, 영단어, 한국어, 스피킹 추가 등 수정 할 수 있도록 하기
 window.addEventListener("load", (e) => {
   e.preventDefault();
-
-  if (!sessionStorage.getItem("access_token") && sessionStorage.getItem("refresh_token") !== null) {
+  category.disabled = true;
+  if (
+    !sessionStorage.getItem("access_token") &&
+    sessionStorage.getItem("refresh_token") !== null
+  ) {
     //refresh_token api
     fetch(refreshUrl, {
       method: "post",
@@ -27,21 +33,21 @@ window.addEventListener("load", (e) => {
       }),
     })
       .then((res) => {
-        if(res.status !== 200){
-          res.json().then(json=>{
-            let detail_error = json.detail
-            if(detail_error.code === "ER011"){
-              alert("해당 유저는 존재하지 않습니다.")
-            }else if(detail_error.code === "ER997"){
-              alert("재로그인이 필요합니다.")
-            }else if(detail_error.code === "ER998"){
-              alert("재로그인이 필요합니다.")
-            }else if(detail_error.code === "ER999"){
-              alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+        if (res.status !== 200) {
+          res.json().then((json) => {
+            let detail_error = json.detail;
+            if (detail_error.code === "ER011") {
+              alert("해당 유저는 존재하지 않습니다.");
+            } else if (detail_error.code === "ER997") {
+              alert("재로그인이 필요합니다.");
+            } else if (detail_error.code === "ER998") {
+              alert("재로그인이 필요합니다.");
+            } else if (detail_error.code === "ER999") {
+              alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
             }
-          })
-        }else{
-          res.json().then((data)=>{
+          });
+        } else {
+          res.json().then((data) => {
             sessionStorage.setItem("access_token", data.access_token);
             sessionStorage.setItem("user_id", data.id);
             sessionStorage.setItem("refresh_token", data.refresh_token);
@@ -56,27 +62,27 @@ window.addEventListener("load", (e) => {
               }),
             })
               .then((res) => {
-                if(res.status !== 200){
-                  res.json().then(json=>{
+                if (res.status !== 200) {
+                  res.json().then((json) => {
                     let detail_error = json.detail;
-                    if(detail_error.code === "ER011"){
-                      alert("해당 유저는 존재하지 않습니다.")
-                    }else if(detail_error.code === "ER997"){
-                      alert("재로그인이 필요합니다.")
-                    }else if(detail_error.code === "ER998"){
-                      alert("재로그인이 필요합니다.")
-                    }else if(detail_error.code === "ER999"){
-                      alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+                    if (detail_error.code === "ER011") {
+                      alert("해당 유저는 존재하지 않습니다.");
+                    } else if (detail_error.code === "ER997") {
+                      alert("재로그인이 필요합니다.");
+                    } else if (detail_error.code === "ER998") {
+                      alert("재로그인이 필요합니다.");
+                    } else if (detail_error.code === "ER999") {
+                      alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
                     }
-                  })
-                }else{
-                  res.json().then(data=>{
+                  });
+                } else {
+                  res.json().then((data) => {
                     console.log(data);
-                  })
+                  });
                 }
               })
               .catch((error) => alert(error));
-          })
+          });
         }
       })
       .catch((error) => {
@@ -100,27 +106,27 @@ window.addEventListener("load", (e) => {
       ]),
     })
       .then((res) => {
-        if(res.status !== 200){
-          res.json().then(json=>{
+        if (res.status !== 200) {
+          res.json().then((json) => {
             let detail_error = json.detail;
-            if(detail_error.code === "ER013"){
-              alert("로그인 후 이용해주시길 바랍니다.")
-            }else if(detail_error.code ==="ER014"){
-              alert("재로그인이 필요합니다.")
-            }else if(detail_error.code ==="ER015"){
-              alert("로그인 후 이용해주시길 바랍니다.")
-            }else if(detail_error.code ==="ER016"){
-              alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
-            }else if(detail_error.code ==="ER017"){
-              alert("한국어 칸을 채워주세요.")
-            }else if(detail_error.code ==="ER018"){
-              alert("영어 칸을 채워주세요.")
+            if (detail_error.code === "ER013") {
+              alert("로그인 후 이용해주시길 바랍니다.");
+            } else if (detail_error.code === "ER014") {
+              alert("재로그인이 필요합니다.");
+            } else if (detail_error.code === "ER015") {
+              alert("로그인 후 이용해주시길 바랍니다.");
+            } else if (detail_error.code === "ER016") {
+              alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
+            } else if (detail_error.code === "ER017") {
+              alert("한국어 칸을 채워주세요.");
+            } else if (detail_error.code === "ER018") {
+              alert("영어 칸을 채워주세요.");
             }
-          })
-        }else{
-          res.json().then(data=>{
+          });
+        } else {
+          res.json().then((data) => {
             console.log(data);
-            category.value = localStorage.getItem("category_name")
+            category.value = localStorage.getItem("category_name");
             const categoryName = data.data.map((x, i) => {
               return data.data[i].Category;
             });
@@ -157,7 +163,7 @@ window.addEventListener("load", (e) => {
             txtGroup.innerHTML =
               "<div class='txt-tit'><p>한국어</p><p>영어</p><p>발음</p><div></div></div>" +
               dataAll;
-          })
+          });
         }
       })
       .catch((error) => {
@@ -185,7 +191,7 @@ function editDetail(me) {
     enDetail.textContent +
     "><input type='text' value=" +
     spDetail.textContent +
-    "><p><i onclick='detailUpdate(this)'>수정</i><i onclick='detailDelete(this)'>삭제</i></p>";
+    "><p class='editsBtn'><i class='fa-solid fa-pen' onclick='detailUpdate(this)'></i><i class='fa-solid fa-minus' onclick='detailDelete(this)'></i></p>";
 }
 
 //단어 수정한거 업데이트
@@ -213,30 +219,30 @@ function detailUpdate(me) {
     ]),
   })
     .then((res) => {
-      if(res.status !== 200){
-        res.json().then(json=>{
+      if (res.status !== 200) {
+        res.json().then((json) => {
           let detail_error = json.detail;
-          if(detail_error.code === "ER013"){
-            alert("로그인 후 이용해주시길 바랍니다.")
-          }else if(detail_error.code ==="ER014"){
-            alert("재로그인이 필요합니다.")
-          }else if(detail_error.code ==="ER015"){
-            alert("로그인 후 이용해주시길 바랍니다.")
-          }else if(detail_error.code ==="ER016"){
-            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
-          }else if(detail_error.code ==="ER017"){
-            alert("한국어 칸을 채워주세요.")
-          }else if(detail_error.code ==="ER018"){
-            alert("영어 칸을 채워주세요.")
-          }else if(detail_error.code ==="ER019"){
+          if (detail_error.code === "ER013") {
+            alert("로그인 후 이용해주시길 바랍니다.");
+          } else if (detail_error.code === "ER014") {
+            alert("재로그인이 필요합니다.");
+          } else if (detail_error.code === "ER015") {
+            alert("로그인 후 이용해주시길 바랍니다.");
+          } else if (detail_error.code === "ER016") {
+            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
+          } else if (detail_error.code === "ER017") {
+            alert("한국어 칸을 채워주세요.");
+          } else if (detail_error.code === "ER018") {
+            alert("영어 칸을 채워주세요.");
+          } else if (detail_error.code === "ER019") {
             //날짜값 틀림
-            alert("오류가 발생했습니다. 관리자에게 문의해주세요.")
-          }else if(detail_error.code ==="ER020"){
-            alert("데이터가 존재하지 않습니다.")
+            alert("오류가 발생했습니다. 관리자에게 문의해주세요.");
+          } else if (detail_error.code === "ER020") {
+            alert("데이터가 존재하지 않습니다.");
           }
-        })
-      }else{
-        res.json().then(data=>{
+        });
+      } else {
+        res.json().then((data) => {
           console.log(data);
           const detailEnglishAll = data.data.map((x, i) => {
             return data.data[i].English;
@@ -245,7 +251,7 @@ function detailUpdate(me) {
           console.log(detailEnglishAll);
           const bodyCreated_At = data.data[matchEnglish].Created_At;
           console.log(bodyCreated_At);
-    
+
           fetch("http://35.212.150.195/api/note/update", {
             method: "PATCH",
             headers: {
@@ -278,7 +284,7 @@ function detailUpdate(me) {
             .catch((error) => {
               console.log(error);
             });
-        })
+        });
       }
     })
     .catch((error) => {
@@ -307,33 +313,33 @@ function detailDelete(me) {
     ]),
   })
     .then((res) => {
-      if(res.status !== 200){
-        res.json().then(json=>{
+      if (res.status !== 200) {
+        res.json().then((json) => {
           let detail_error = json.detail;
-          if(detail_error.code === "ER013"){
-            alert("로그인 후 이용해주시길 바랍니다.")
-          }else if(detail_error.code ==="ER014"){
-            alert("재로그인이 필요합니다.")
-          }else if(detail_error.code ==="ER015"){
-            alert("로그인 후 이용해주시길 바랍니다.")
-          }else if(detail_error.code ==="ER016"){
-            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
-          }else if(detail_error.code ==="ER017"){
-            alert("한국어 칸을 채워주세요.")
-          }else if(detail_error.code ==="ER018"){
-            alert("영어 칸을 채워주세요.")
+          if (detail_error.code === "ER013") {
+            alert("로그인 후 이용해주시길 바랍니다.");
+          } else if (detail_error.code === "ER014") {
+            alert("재로그인이 필요합니다.");
+          } else if (detail_error.code === "ER015") {
+            alert("로그인 후 이용해주시길 바랍니다.");
+          } else if (detail_error.code === "ER016") {
+            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
+          } else if (detail_error.code === "ER017") {
+            alert("한국어 칸을 채워주세요.");
+          } else if (detail_error.code === "ER018") {
+            alert("영어 칸을 채워주세요.");
           }
-        })
-      }else{
-        res.json().then(data=>{
+        });
+      } else {
+        res.json().then((data) => {
           console.log(data);
           const detailEnglishAll = data.data.map((x, i) => {
             return data.data[i].English;
           });
           const matchEnglish = detailEnglishAll.indexOf(enDetail1.value);
           const bodyCreated_At = data.data[matchEnglish].Created_At;
-    
-          fetch(noteUpdateUrl, {
+
+          fetch(noteDeleteUrl, {
             method: "delete",
             headers: {
               "Content-Type": "application/json",
@@ -352,35 +358,35 @@ function detailDelete(me) {
             }),
           })
             .then((res) => {
-              if(res.status !== 200){
-                res.json().then(json=>{
+              if (res.status !== 200) {
+                res.json().then((json) => {
                   let detail_error = json.detail;
-                  if(detail_error.code === "ER013"){
-                    alert("로그인 후 이용해주시길 바랍니다.")
-                  }else if(detail_error.code ==="ER014"){
-                    alert("재로그인이 필요합니다.")
-                  }else if(detail_error.code ==="ER015"){
-                    alert("로그인 후 이용해주시길 바랍니다.")
-                  }else if(detail_error.code ==="ER016"){
-                    alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+                  if (detail_error.code === "ER013") {
+                    alert("로그인 후 이용해주시길 바랍니다.");
+                  } else if (detail_error.code === "ER014") {
+                    alert("재로그인이 필요합니다.");
+                  } else if (detail_error.code === "ER015") {
+                    alert("로그인 후 이용해주시길 바랍니다.");
+                  } else if (detail_error.code === "ER016") {
+                    alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
                   }
-                })
-              }else{
-                res.json().then(data=>{
+                });
+              } else {
+                res.json().then((data) => {
                   console.log(data);
-                alert("삭제가 완료되었습니다.");
-                location.reload();
-                })
+                  alert("삭제가 완료되었습니다.");
+                  location.reload();
+                });
               }
             })
             .catch((error) => {
               console.log(error);
             });
-        })
+        });
       }
     })
     .catch((error) => {
       console.log(error);
     });
 }
-//카테고리 바꾸기
+

@@ -80,3 +80,17 @@ main .detail-box .txt-group .txt-box>p {
 main .detail-box .txt-group .txt-box>p:not(:last-child) {
     margin-right: 100px;
 } */
+
+.txt-group .txt-box > input{
+    border: 1px solid #cfcfcf;
+    text-align: center;
+    border-radius: 9px;
+    margin: 0 5px;
+    width: 20%;
+    display: inline-block;
+    font-size: 16px;
+}
+main .detail-box .txt-group .txt-box .editsBtn{
+    width: 10px;
+    cursor: pointer;
+}

@@ -84,6 +84,7 @@ window.addEventListener("load", (e) => {
                   res.json().then((data) => {
                     console.log(data);
                     var num = 0;
+                    console.log(data.data[num])
                     w.textContent = data.data[num].English;
                     s.addEventListener("click", () => {
                       const answerWords = a.value.split(",");
@@ -100,7 +101,7 @@ window.addEventListener("load", (e) => {
                         inf.textContent = "답을 입력해주세요.";
                       } else {
                         if (isCorrect) {
-                          inf.textContent = "정답입니다";
+                          //inf.textContent = "정답입니다";
                           inf.style.color = "rgba(0, 87, 255, 0.5)";
                           wordBorder.style.border =
                             "1px solid rgba(0, 87, 255, 0.5)";
@@ -118,7 +119,7 @@ window.addEventListener("load", (e) => {
                           }
                           //오답이면 붉은색으로 바뀜
                         } else {
-                          inf.textContent = "올바른 답을 적어주세요.";
+                          //inf.textContent = "올바른 답을 적어주세요.";
                           inf.style.color = "rgba(255, 0, 0, 0.5)";
                           wordBorder.style.border =
                             "1px solid rgba(255, 0, 0, 0.5)";
