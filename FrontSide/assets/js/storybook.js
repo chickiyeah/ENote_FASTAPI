@@ -257,7 +257,10 @@ window.addEventListener("load", async() => {
                                                 alert(
                                                   "로그인 후 이용해주시길 바랍니다."
                                                 );
+                                                localStorage.clear();
+                                                sessionStorage.clear();
                                                 $(".loading").hide()
+                                                location.href = "/login"
                                               } else if (
                                                 detail_error.code === "ER014"
                                               ) {
@@ -265,13 +268,17 @@ window.addEventListener("load", async() => {
                                                 localStorage.clear();
                                                 sessionStorage.clear();
                                                 $(".loading").hide()
+                                                location.href = "/login"
                                               } else if (
                                                 detail_error.code === "ER015"
                                               ) {
                                                 alert(
                                                   "로그인 후 이용해주시길 바랍니다."
                                                 );
+                                                localStorage.clear();
+                                                sessionStorage.clear();
                                                 $(".loading").hide()
+                                                location.href = "/login"
                                               } else if (
                                                 detail_error.code === "ER016"
                                               ) {
@@ -472,10 +479,22 @@ function changeInput(a) {
               let detail_error = json.detail;
               if (detail_error.code === "ER013") {
                 alert("로그인 후 이용해주시길 바랍니다.");
+                localStorage.clear();
+                sessionStorage.clear();
+                $(".loading").hide()
+                location.href = "/login"
               } else if (detail_error.code === "ER014") {
                 alert("재로그인이 필요합니다.");
+                localStorage.clear();
+                sessionStorage.clear();
+                $(".loading").hide()
+                location.href = "/login"
               } else if (detail_error.code === "ER015") {
                 alert("로그인 후 이용해주시길 바랍니다.");
+                localStorage.clear();
+                sessionStorage.clear();
+                $(".loading").hide()
+                location.href = "/login"
               } else if (detail_error.code === "ER016") {
                 alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
               } else if (detail_error.code === "ER017") {
@@ -529,10 +548,22 @@ function changeInput(a) {
                         let detail_error = json.detail;
                         if (detail_error.code === "ER013") {
                           alert("로그인 후 이용해주시길 바랍니다.");
+                          localStorage.clear();
+                          sessionStorage.clear();
+                          $(".loading").hide()
+                          location.href = "/login"
                         } else if (detail_error.code === "ER014") {
                           alert("재로그인이 필요합니다.");
+                          localStorage.clear();
+                          sessionStorage.clear();
+                          $(".loading").hide()
+                          location.href = "/login"
                         } else if (detail_error.code === "ER015") {
                           alert("로그인 후 이용해주시길 바랍니다.");
+                          localStorage.clear();
+                          sessionStorage.clear();
+                          $(".loading").hide()
+                          location.href = "/login"
                         } else if (detail_error.code === "ER016") {
                           alert(
                             "비활성화된 유저입니다. 관리자에게 문의해주세요."
@@ -548,6 +579,7 @@ function changeInput(a) {
                           );
                         } else if (detail_error.code === "ER020") {
                           alert("데이터가 존재하지 않습니다.");
+                          
                         }
                       });
                     } else {
@@ -599,10 +631,22 @@ function removeCategory(a) {
           let detail_error = json.detail;
           if (detail_error.code === "ER013") {
             alert("로그인 후 이용해주시길 바랍니다.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER014") {
             alert("재로그인이 필요합니다.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER015") {
             alert("로그인 후 이용해주시길 바랍니다.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER016") {
             alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
           } else if (detail_error.code === "ER017") {
@@ -656,10 +700,26 @@ function removeCategory(a) {
                       let detail_error = json.detail;
                       if (detail_error.code === "ER013") {
                         alert("로그인 후 이용해주시길 바랍니다.");
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        $(".loading").hide()
+                        location.href = "/login"
                       } else if (detail_error.code === "ER014") {
                         alert("재로그인이 필요합니다.");
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        $(".loading").hide()
+                        location.href = "/login"
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        $(".loading").hide()
+                        location.href = "/login"
                       } else if (detail_error.code === "ER015") {
                         alert("로그인 후 이용해주시길 바랍니다.");
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        $(".loading").hide()
+                        location.href = "/login"
                       } else if (detail_error.code === "ER016") {
                         alert(
                           "비활성화된 유저입니다. 관리자에게 문의해주세요."
