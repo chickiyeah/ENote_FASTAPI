@@ -1,78 +1,83 @@
 var refreshUrl = "http://35.212.150.195/api/user/refresh_token";
 var verifyUrl = "http://35.212.150.195/api/user/verify_token";
 
-if (!sessionStorage.getItem("access_token")) {
-  //refresh_token api
-  fetch(refreshUrl, {
-    method: "post",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      refresh_token: sessionStorage.getItem("refresh_token"),
-    }),
-  })
-    .then((res) => {
-      if(res.status !== 200){
-        res.json().then(json=>{
-          let detail_error = json.detail
-          if(detail_error.code === "ER011"){
-            alert("해당 유저는 존재하지 않습니다.")
-          }else if(detail_error.code === "ER997"){
-            alert("재로그인이 필요합니다.")
-          }else if(detail_error.code === "ER998"){
-            alert("재로그인이 필요합니다.")
-          }else if(detail_error.code === "ER999"){
-            alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
-          }
-        })
-      }else{
-        res.json().then((data)=>{
-          sessionStorage.setItem("access_token", data.access_token);
-          sessionStorage.setItem("user_id", data.id);
-          sessionStorage.setItem("refresh_token", data.refresh_token);
-          //verify token api
-          fetch(verifyUrl, {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              access_token: sessionStorage.getItem("access_token"),
-            }),
-          })
-            .then((res) => {
-              if(res.status !== 200){
-                res.json().then(json=>{
-                  let detail_error = json.detail;
-                  if(detail_error.code === "ER011"){
-                    alert("해당 유저는 존재하지 않습니다.")
-                  }else if(detail_error.code === "ER997"){
-                    alert("재로그인이 필요합니다.")
-                  }else if(detail_error.code === "ER998"){
-                    alert("재로그인이 필요합니다.")
-                  }else if(detail_error.code === "ER999"){
-                    alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
-                  }
-                })
-              }else{
-                res.json().then(data=>{
-                  location.reload();
-                })
-              }
-            })
-            .catch((error) => alert(error));
-        })
-      }
+window.addEventListener('load',()=>{
+  $(".loading").show()
+  if (!sessionStorage.getItem("access_token")) {
+    //refresh_token api
+    fetch(refreshUrl, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refresh_token: sessionStorage.getItem("refresh_token"),
+      }),
     })
-    .catch((error) => {
-      alert(error);
-    });
-} else {
-  (function () {
-    calendarMaker($("#calendarForm"), new Date());
-  })();
-}
+      .then((res) => {
+        if(res.status !== 200){
+          res.json().then(json=>{
+            let detail_error = json.detail
+            if(detail_error.code === "ER011"){
+              alert("해당 유저는 존재하지 않습니다.")
+            }else if(detail_error.code === "ER997"){
+              alert("재로그인이 필요합니다.")
+            }else if(detail_error.code === "ER998"){
+              alert("재로그인이 필요합니다.")
+            }else if(detail_error.code === "ER999"){
+              alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+            }
+          })
+        }else{
+          res.json().then((data)=>{
+            sessionStorage.setItem("access_token", data.access_token);
+            sessionStorage.setItem("user_id", data.id);
+            sessionStorage.setItem("refresh_token", data.refresh_token);
+            //verify token api
+            fetch(verifyUrl, {
+              method: "post",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                access_token: sessionStorage.getItem("access_token"),
+              }),
+            })
+              .then((res) => {
+                if(res.status !== 200){
+                  res.json().then(json=>{
+                    let detail_error = json.detail;
+                    if(detail_error.code === "ER011"){
+                      alert("해당 유저는 존재하지 않습니다.")
+                    }else if(detail_error.code === "ER997"){
+                      alert("재로그인이 필요합니다.")
+                    }else if(detail_error.code === "ER998"){
+                      alert("재로그인이 필요합니다.")
+                    }else if(detail_error.code === "ER999"){
+                      alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+                    }
+                  })
+                }else{
+                  res.json().then(data=>{
+                    location.reload();
+                  })
+                }
+              })
+              .catch((error) => alert(error));
+          })
+        }
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  } else {
+    (function () {
+      calendarMaker($("#calendarForm"), new Date());
+    })();
+    $(".loading").hide()
+  }
+})
+
 
 var nowDate = new Date();
 function calendarMaker(target, date) {
@@ -166,6 +171,7 @@ function calendarMaker(target, date) {
     });
     //일자 선택 클릭
     $(".custom_calendar_table").on("click", "td", function () {
+      $(".loading").show()
       $(".custom_calendar_table .select_day").removeClass("select_day");
       $(this).removeClass("select_day").addClass("select_day");
       $(".custom_calendar_table td:not([select_day]) .date").hide()
@@ -211,9 +217,12 @@ function calendarMaker(target, date) {
               var madeLength = dateCalendar.filter((x) => x === yearMonthDay);
               console.log(madeLength.length);
               
+              
               if (madeLength.length <= 0) {
+                $(".loading").hide()
               } else {
                 $(this).children().html(madeLength.length);
+                $(".loading").hide()
               }
             })
           }

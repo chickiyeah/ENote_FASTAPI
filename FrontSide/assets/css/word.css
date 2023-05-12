@@ -24,7 +24,7 @@ main .word-group .word-box .bg {
     height: 470px;
     margin: auto;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     border: 1px solid #ccc;
     border-radius: 30px;
@@ -70,4 +70,11 @@ main .word-group .word-box .bg #inf{
     font-size: 13px;
     color: rgba(255, 0, 0, 0.5);
     bottom: 30px;
+}
+.inf{
+    text-align: center;
+    position: absolute;
+    bottom: 3%;
+    left: 50%;
+    transform: translateX(-50%);
 }

@@ -3,6 +3,7 @@ try{
   const accessToken = sessionStorage.getItem("access_token");
   
   outBtn.addEventListener("click", (e) => {
+    $(".loading").show()
     e.preventDefault();
     fetch("http://localhost:8000/api/user/logout", {
       method: "post",
@@ -24,7 +25,7 @@ try{
       .then((data) => {
         localStorage.clear();
         sessionStorage.clear();
-        alert("로그아웃 성공");
+        $(".loading").show()
       })
       .catch((error) => {
         alert(error);

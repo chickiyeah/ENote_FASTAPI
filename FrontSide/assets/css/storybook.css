@@ -151,3 +151,7 @@ main .storybook-group .storybook-box .bg a>i {
     top: 14px;
     right: 14px;
 }
+.title{
+    width:100%;
+    cursor:pointer;
+}

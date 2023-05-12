@@ -15,6 +15,17 @@ var deleteUrl = "http://35.212.150.195/api/note/delete";
 var addNoteUrl = "http://35.212.150.195/api/note/add";
 clickEnter(newCategory, newCategoryAdd);
 
+//카테고리 누르면 해당 디테일로 이동
+function setdetails() {
+  const titles = document.querySelectorAll(".title");
+  titles.forEach((el) => {
+    el.addEventListener("click", (e) => {
+      sendTitle(e.target.textContent);
+      location.href = '/storybook/detail';
+    });
+  });
+};
+
 window.addEventListener("load", async() => {
   var refreshUrl = "http://35.212.150.195/api/user/refresh_token";
   if (sessionStorage.getItem("refresh_token") === null) {
@@ -23,6 +34,7 @@ window.addEventListener("load", async() => {
   } else {
   }
   //refresh_token api
+  $(".loading").show()
   fetch(refreshUrl, {
     method: "post",
     headers: {
@@ -38,12 +50,16 @@ window.addEventListener("load", async() => {
           let detail_error = json.detail;
           if (detail_error.code === "ER011") {
             alert("해당 유저는 존재하지 않습니다.");
+            $(".loading").hide()
           } else if (detail_error.code === "ER997") {
             alert("재로그인이 필요합니다.");
+            $(".loading").hide()
           } else if (detail_error.code === "ER998") {
             alert("재로그인이 필요합니다.");
+            $(".loading").hide()
           } else if (detail_error.code === "ER999") {
             alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
+            $(".loading").hide()
           }
         });
       } else {
@@ -73,16 +89,22 @@ window.addEventListener("load", async() => {
                   let detail_error = json.detail;
                   if (detail_error.code === "ER013") {
                     alert("로그인 후 이용해주시길 바랍니다.");
+                    $(".loading").hide()
                   } else if (detail_error.code === "ER014") {
                     alert("재로그인이 필요합니다.");
+                    $(".loading").hide()
                   } else if (detail_error.code === "ER015") {
                     alert("로그인 후 이용해주시길 바랍니다.");
+                    $(".loading").hide()
                   } else if (detail_error.code === "ER016") {
                     alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
+                    $(".loading").hide()
                   } else if (detail_error.code === "ER017") {
                     alert("한국어 칸을 채워주세요.");
+                    $(".loading").hide()
                   } else if (detail_error.code === "ER018") {
                     alert("영어 칸을 채워주세요.");
+                    $(".loading").hide()
                   }
                 });
               } else {
@@ -120,6 +142,7 @@ window.addEventListener("load", async() => {
                       console.log(targetInput.value);
                       if (targetInput.value.length <= 0) {
                         alert("빈칸을 채워주세요");
+                        $(".loading").hide()
                         targetInput.focus();
                       } else {
                         alert("수정 완료");
@@ -156,18 +179,25 @@ window.addEventListener("load", async() => {
                                     let detail_error = json.detail;
                                     if (detail_error.code === "ER013") {
                                       alert("로그인 후 이용해주시길 바랍니다.");
+                                      $(".loading").hide()
                                     } else if (detail_error.code === "ER014") {
                                       alert("재로그인이 필요합니다.");
+                                      $(".loading").hide()
                                     } else if (detail_error.code === "ER015") {
                                       alert("로그인 후 이용해주시길 바랍니다.");
+                                      $(".loading").hide()
                                     } else if (detail_error.code === "ER016") {
                                       alert(
                                         "비활성화된 유저입니다. 관리자에게 문의해주세요."
+                                        
                                       );
+                                      $(".loading").hide()
                                     } else if (detail_error.code === "ER017") {
                                       alert("한국어 칸을 채워주세요.");
+                                      $(".loading").hide()
                                     } else if (detail_error.code === "ER018") {
                                       alert("영어 칸을 채워주세요.");
+                                      $(".loading").hide()
                                     }
                                   });
                                 } else {
@@ -227,32 +257,40 @@ window.addEventListener("load", async() => {
                                                 alert(
                                                   "로그인 후 이용해주시길 바랍니다."
                                                 );
+                                                $(".loading").hide()
                                               } else if (
                                                 detail_error.code === "ER014"
                                               ) {
                                                 alert("재로그인이 필요합니다.");
+                                                localStorage.clear();
+                                                sessionStorage.clear();
+                                                $(".loading").hide()
                                               } else if (
                                                 detail_error.code === "ER015"
                                               ) {
                                                 alert(
                                                   "로그인 후 이용해주시길 바랍니다."
                                                 );
+                                                $(".loading").hide()
                                               } else if (
                                                 detail_error.code === "ER016"
                                               ) {
                                                 alert(
                                                   "비활성화된 유저입니다. 관리자에게 문의해주세요."
                                                 );
+                                                $(".loading").hide()
                                               } else if (
                                                 detail_error.code === "ER017"
                                               ) {
                                                 alert(
                                                   "한국어 칸을 채워주세요."
                                                 );
+                                                $(".loading").hide()
                                               } else if (
                                                 detail_error.code === "ER018"
                                               ) {
                                                 alert("영어 칸을 채워주세요.");
+                                                $(".loading").hide()
                                               } else if (
                                                 detail_error.code === "ER019"
                                               ) {
@@ -260,12 +298,14 @@ window.addEventListener("load", async() => {
                                                 alert(
                                                   "오류가 발생했습니다. 관리자에게 문의해주세요."
                                                 );
+                                                $(".loading").hide()
                                               } else if (
                                                 detail_error.code === "ER020"
                                               ) {
                                                 alert(
                                                   "데이터가 존재하지 않습니다."
                                                 );
+                                                $(".loading").hide()
                                               }
                                             });
                                           } else {
@@ -298,7 +338,7 @@ window.addEventListener("load", async() => {
                       return (
                         '<div class="bg" style="margin-bottom:26px;"><p class="title"><a href="#">' +
                         categoryList[i] +
-                        '</a></p><input type="text" class="titleInput" style="display:none;" /><button class="inputeditBtn" style="display:none;">수정하기</button><a href="#" class="menu"><i class="fa-solid fa-ellipsis-vertical" style="color: #000000"></i><ul class="story-hide"><li onclick="add()">추가</li><li class="edit">수정</li><li class="remove">삭제</li></ul></a></div>'
+                        '</a></p><input type="text" class="titleInput" style="display:none;" /><button class="inputeditBtn" style="display:none;">수정하기</button><a href="#" class="menu"><i class="fa-solid fa-ellipsis-vertical" style="color: #000000"></i><ul class="story-hide"><li class="edit">수정</li><li class="remove">삭제</li></ul></a></div>'
                       );
                     })
                     .join("");
@@ -315,6 +355,9 @@ window.addEventListener("load", async() => {
                       console.log(0);
                       $(this).next().slideToggle("fast");
                     });
+                  
+                  setdetails()
+                  $(".loading").hide()
 
                   //추가기능
                   newCategoryAdd.addEventListener("click", () => {
@@ -351,18 +394,6 @@ setTimeout(() => {
     });
   });
 }, 3000);
-
-//카테고리 누르면 해당 디테일로 이동
-setTimeout(() => {
-  const titles = document.querySelectorAll(".title");
-  titles.forEach((el) => {
-    el.addEventListener("click", (e) => {
-      sendTitle(e.target.textContent);
-      console.log(e.target.textContent)
-      location.href = '/storybook/detail';
-    });
-  });
-}, 2000);
 
 //수정input에 엔터누르면 수정버튼click
 setTimeout(() => {
@@ -541,6 +572,7 @@ function changeInput(a) {
 
 //삭제기능
 function removeCategory(a) {
+  console.log(a);
   var targetRemove =
     a.parentNode.parentNode.previousElementSibling.previousElementSibling
       .previousElementSibling.textContent;
@@ -666,9 +698,9 @@ function addNewCate(newCategory, categoryList) {
     storyBookBox.innerHTML = categoryList
       .map((x, i) => {
         return (
-          '<div class="bg" style="margin-bottom:26px;"><p class="title"><a href="/storybook/detail" onclick="sendTitle(this)">' +
+          '<div class="bg" style="margin-bottom:26px;"><p class="title"><a href="#">' +
           categoryList[i] +
-          '</a></p><input type="text" class="titleInput" style="display:none;" /><button class="inputeditBtn" style="display:none;">수정하기</button><a href="#" class="menu"><i class="fa-solid fa-ellipsis-vertical" style="color: #000000"></i><ul class="story-hide"><li onclick="add()">추가</li><li class="edit" onclick="changeInput(this)">수정</li><li class="remove" onclick="removeCategory(this)">삭제</li></ul></a></div>'
+          '</a></p><input type="text" class="titleInput" style="display:none;" /><button class="inputeditBtn" style="display:none;">수정하기</button><a href="#" class="menu"><i class="fa-solid fa-ellipsis-vertical" style="color: #000000"></i><ul class="story-hide"><li onclick="add()">추가</li><li class="edit">수정</li><li class="remove">삭제</li></ul></a></div>'
         );
       })
       .join("");

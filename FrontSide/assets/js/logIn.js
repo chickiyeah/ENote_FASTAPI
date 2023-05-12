@@ -29,6 +29,7 @@ logBtn.addEventListener("click", () => {
     alert("비밀번호를 제대로 입력해주세요.")
     //제대로 작성했다면!
   } else {
+    $(".login").show()
     fetch("http://35.212.150.195/api/user/login", {
       method: "post",
       headers: {
@@ -60,16 +61,22 @@ logBtn.addEventListener("click", () => {
             //감사합니다.
             let detail_error = json.detail
             if (detail_error.code == "ER012") {
+              $(".login").hide()
               alert("이메일 인증이 필요합니다.")
             }else if(detail_error.code == "ER003"){ 
+              $(".login").hide()
               alert("이메일을 입력해주세요.")
             }else if(detail_error.code === "ER004"){
+              $(".login").hide()
               alert("비밀번호를 입력해주세요.")
             }else if(detail_error.code === "ER008"){
+              $(".login").hide()
               alert("이메일을 다시 확인해주세요.")
             }else if(detail_error.code === "ER009"){
+              $(".login").hide()
               alert("비밀번호가 일치하지 않습니다.")
             }else if(detail_error.code === "ER999"){
+              $(".login").hide()
               alert("이메일을 다시 확인해주세요.")
             }
             console.log(json)

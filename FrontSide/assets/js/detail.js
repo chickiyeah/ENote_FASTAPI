@@ -16,6 +16,7 @@ var loadListName = localStorage.getItem("category_name");
 //해당 카테고리에 해당하는 단어 나오게 하기 //이건 카테고리가 없음
 //카테고리 이름, 영단어, 한국어, 스피킹 추가 등 수정 할 수 있도록 하기
 window.addEventListener("load", (e) => {
+  $(".loading").show()
   e.preventDefault();
   category.disabled = true;
   if (
@@ -38,10 +39,19 @@ window.addEventListener("load", (e) => {
             let detail_error = json.detail;
             if (detail_error.code === "ER011") {
               alert("해당 유저는 존재하지 않습니다.");
+              $(".loading").hide()
             } else if (detail_error.code === "ER997") {
               alert("재로그인이 필요합니다.");
+              localStorage.clear();
+              sessionStorage.clear();
+              $(".loading").hide()
+              location.href = "/login"
             } else if (detail_error.code === "ER998") {
               alert("재로그인이 필요합니다.");
+              localStorage.clear();
+              sessionStorage.clear();
+              $(".loading").hide()
+              location.href = "/login"
             } else if (detail_error.code === "ER999") {
               alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
             }
@@ -69,8 +79,16 @@ window.addEventListener("load", (e) => {
                       alert("해당 유저는 존재하지 않습니다.");
                     } else if (detail_error.code === "ER997") {
                       alert("재로그인이 필요합니다.");
+                      localStorage.clear();
+                      sessionStorage.clear();
+                      $(".loading").hide()
+                      location.href = "/login"
                     } else if (detail_error.code === "ER998") {
                       alert("재로그인이 필요합니다.");
+                      localStorage.clear();
+                      sessionStorage.clear();
+                      $(".loading").hide()
+                      location.href = "/login"
                     } else if (detail_error.code === "ER999") {
                       alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
                     }
@@ -111,10 +129,22 @@ window.addEventListener("load", (e) => {
             let detail_error = json.detail;
             if (detail_error.code === "ER013") {
               alert("로그인 후 이용해주시길 바랍니다.");
+              localStorage.clear();
+              sessionStorage.clear();
+              $(".loading").hide()
+              location.href = "/login"
             } else if (detail_error.code === "ER014") {
               alert("재로그인이 필요합니다.");
+              localStorage.clear();
+              sessionStorage.clear();
+              $(".loading").hide()
+              location.href = "/login"
             } else if (detail_error.code === "ER015") {
               alert("로그인 후 이용해주시길 바랍니다.");
+              localStorage.clear();
+              sessionStorage.clear();
+              $(".loading").hide()
+              location.href = "/login"
             } else if (detail_error.code === "ER016") {
               alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
             } else if (detail_error.code === "ER017") {
@@ -125,6 +155,7 @@ window.addEventListener("load", (e) => {
           });
         } else {
           res.json().then((data) => {
+            $(".loading").hide()
             console.log(data);
             category.value = localStorage.getItem("category_name");
             const categoryName = data.data.map((x, i) => {
@@ -163,6 +194,7 @@ window.addEventListener("load", (e) => {
             txtGroup.innerHTML =
               "<div class='txt-tit'><p>한국어</p><p>영어</p><p>발음</p><div></div></div>" +
               dataAll;
+              $(".loading").hide()
           });
         }
       })
@@ -191,11 +223,12 @@ function editDetail(me) {
     enDetail.textContent +
     "><input type='text' value=" +
     spDetail.textContent +
-    "><p class='editsBtn'><i class='fa-solid fa-pen' onclick='detailUpdate(this)'></i><i class='fa-solid fa-minus' onclick='detailDelete(this)'></i></p>";
+    "><p class='editsBtn'><i class='fa-solid fa-pen' onclick='detailUpdate(this)'></i><i class='fa-solid fa-trash' onclick='detailDelete(this)'></i></p>";
 }
 
 //단어 수정한거 업데이트
 function detailUpdate(me) {
+  $(".loading").show()
   var noteBox = me.parentNode;
   var koDetail1 =
     me.parentNode.previousElementSibling.previousElementSibling
@@ -224,21 +257,53 @@ function detailUpdate(me) {
           let detail_error = json.detail;
           if (detail_error.code === "ER013") {
             alert("로그인 후 이용해주시길 바랍니다.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER014") {
             alert("재로그인이 필요합니다.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER015") {
             alert("로그인 후 이용해주시길 바랍니다.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER016") {
             alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER017") {
             alert("한국어 칸을 채워주세요.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER018") {
             alert("영어 칸을 채워주세요.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER019") {
             //날짜값 틀림
             alert("오류가 발생했습니다. 관리자에게 문의해주세요.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER020") {
             alert("데이터가 존재하지 않습니다.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           }
         });
       } else {

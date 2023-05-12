@@ -125,6 +125,7 @@ const getDataTranslate = (whichOne, changeValue) => {
 
 //노트 저장할때
 const noteData = () => {
+  $(".loading").show()
   fetch(addNoteUrl, {
     method: "post",
     headers: apiHeaders,
@@ -141,20 +142,36 @@ const noteData = () => {
           let detail_error = json.detail;
           if(detail_error.code === "ER013"){
             alert("로그인 후 이용해주시길 바랍니다.")
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           }else if(detail_error.code ==="ER014"){
             alert("재로그인이 필요합니다.")
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           }else if(detail_error.code ==="ER015"){
             alert("로그인 후 이용해주시길 바랍니다.")
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           }else if(detail_error.code ==="ER016"){
             alert("비활성화된 유저입니다. 관리자에게 문의해주세요.")
+            $(".loading").hide()
           }else if(detail_error.code ==="ER017"){
             alert("한국어 칸을 채워주세요.")
+            $(".loading").hide()
           }else if(detail_error.code ==="ER018"){
             alert("영어 칸을 채워주세요.")
+            $(".loading").hide()
           }
         })
       }else{
         response.json().then(data=>{
+          $(".loading").hide()
           console.log(data)
         })
       }
@@ -294,8 +311,8 @@ window.addEventListener("load", () => {
             }
           }
         } else {
-          alert("저장성공");
           noteData();
+          alert("저장성공");
 
           enSpace.value = "";
           koSpace.value = "";

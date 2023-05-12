@@ -11,7 +11,7 @@ main .container {
 }
 
 main .detail-box .tit-box {
-    width: 400px;
+    width: 80%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -30,6 +30,7 @@ main .detail-box .tit-box input {
     outline: 0;
     padding-left: 20px;
     font-size: 16px;
+    text-align: center;
 }
 
 main .detail-box .tit-box i {
@@ -37,17 +38,28 @@ main .detail-box .tit-box i {
 }
 
 main .detail-box .txt-group {
-    width: 100%;
+    width: 80%;
     margin: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
+    border: 1px #ccc solid;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-radius: 10px;
 }
-
-main .detail-box .txt-group .txt-tit>div {
-    width: 16px;
-}
-
+/* main .detail-box .txt-group {
+    width: 70%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 30px 0;
+    border-radius: 20px;
+    justify-content: center;
+    text-align: center;
+} */
 main .detail-box .txt-group .txt-tit>p,
 main .detail-box .txt-group .txt-box>p {
     width: 20%;
