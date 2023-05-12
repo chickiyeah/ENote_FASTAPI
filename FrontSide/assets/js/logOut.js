@@ -3,7 +3,7 @@ try{
   const accessToken = sessionStorage.getItem("access_token");
   
   outBtn.addEventListener("click", (e) => {
-    $(".loading").show()
+    $(".loading").css('display', 'flex')
     e.preventDefault();
     fetch("http://localhost:8000/api/user/logout", {
       method: "post",

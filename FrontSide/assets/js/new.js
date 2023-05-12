@@ -31,7 +31,7 @@ newBtn.addEventListener("click", () => {
     alert("비밀번호는 6자리 이상 입력해주세요.");
     Pw.focus();
   } else {
-    $(".loading").show()
+    $(".loading").css('display', 'flex')
     fetch(registerUrl, {
       method: "POST",
       headers: {

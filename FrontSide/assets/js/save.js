@@ -125,7 +125,7 @@ const getDataTranslate = (whichOne, changeValue) => {
 
 //노트 저장할때
 const noteData = () => {
-  $(".loading").show()
+  $(".loading").css('display', 'flex')
   fetch(addNoteUrl, {
     method: "post",
     headers: apiHeaders,

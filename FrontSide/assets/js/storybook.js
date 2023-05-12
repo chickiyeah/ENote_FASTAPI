@@ -34,7 +34,7 @@ window.addEventListener("load", async() => {
   } else {
   }
   //refresh_token api
-  $(".loading").show()
+  $(".loading").css('display', 'flex')
   fetch(refreshUrl, {
     method: "post",
     headers: {

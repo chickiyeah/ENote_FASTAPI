@@ -13,7 +13,7 @@ clickEnter(a, s);
 window.addEventListener("load", (e) => {
   e.preventDefault();
   var refreshUrl = "http://35.212.150.195/api/user/refresh_token";
-  $(".loading").show()
+  $(".loading").css('display', 'flex')
   //리프레쉬 토큰이 없다면 로그인 페이지로 이동
   if (sessionStorage.getItem("refresh_token") === null) {
     alert("로그인 후 이용이 가능합니다.");

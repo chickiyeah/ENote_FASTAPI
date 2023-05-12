@@ -16,7 +16,7 @@ var loadListName = localStorage.getItem("category_name");
 //해당 카테고리에 해당하는 단어 나오게 하기 //이건 카테고리가 없음
 //카테고리 이름, 영단어, 한국어, 스피킹 추가 등 수정 할 수 있도록 하기
 window.addEventListener("load", (e) => {
-  $(".loading").show()
+  $(".loading").css('display', 'flex')
   e.preventDefault();
   category.disabled = true;
   if (
@@ -228,7 +228,7 @@ function editDetail(me) {
 
 //단어 수정한거 업데이트
 function detailUpdate(me) {
-  $(".loading").show()
+  $(".loading").css('display', 'flex')
   var noteBox = me.parentNode;
   var koDetail1 =
     me.parentNode.previousElementSibling.previousElementSibling

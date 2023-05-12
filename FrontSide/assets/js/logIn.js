@@ -29,7 +29,7 @@ logBtn.addEventListener("click", () => {
     alert("비밀번호를 제대로 입력해주세요.")
     //제대로 작성했다면!
   } else {
-    $(".login").show()
+    $(".loading").css('display', 'flex')
     fetch("http://35.212.150.195/api/user/login", {
       method: "post",
       headers: {

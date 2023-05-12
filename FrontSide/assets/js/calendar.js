@@ -2,7 +2,7 @@ var refreshUrl = "http://35.212.150.195/api/user/refresh_token";
 var verifyUrl = "http://35.212.150.195/api/user/verify_token";
 
 window.addEventListener('load',()=>{
-  $(".loading").show()
+  $(".loading").css('display', 'flex')
   if (!sessionStorage.getItem("access_token")) {
     //refresh_token api
     fetch(refreshUrl, {
@@ -171,7 +171,7 @@ function calendarMaker(target, date) {
     });
     //일자 선택 클릭
     $(".custom_calendar_table").on("click", "td", function () {
-      $(".loading").show()
+      $(".loading").css('display', 'flex')
       $(".custom_calendar_table .select_day").removeClass("select_day");
       $(this).removeClass("select_day").addClass("select_day");
       $(".custom_calendar_table td:not([select_day]) .date").hide()
