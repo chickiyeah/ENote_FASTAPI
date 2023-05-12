@@ -25,7 +25,7 @@ try{
       .then((data) => {
         localStorage.clear();
         sessionStorage.clear();
-        $(".loading").show()
+        $(".loading").hide()
       })
       .catch((error) => {
         alert(error);
