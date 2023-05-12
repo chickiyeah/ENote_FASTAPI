@@ -17,5 +17,5 @@ jobs:
           port: 22
           debug: true
           script: |
-            cd ~/DABOM
+            cd ~/ENote_FASTAPI
             sudo git pull origin main
