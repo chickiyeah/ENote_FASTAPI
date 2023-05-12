@@ -17,7 +17,7 @@ window.addEventListener("load", (e) => {
   //리프레쉬 토큰이 없다면 로그인 페이지로 이동
   if (sessionStorage.getItem("refresh_token") === null) {
     alert("로그인 후 이용이 가능합니다.");
-    location.href = "/logIn";
+    location.href = "/login";
     //리프레쉬 토큰이 있으면 재발급받기
   } else if (sessionStorage.getItem("refresh_token") !== null) {
     //refresh_token api
