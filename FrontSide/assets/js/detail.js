@@ -359,7 +359,7 @@ function detailUpdate(me) {
 //단어 삭제기능
 function detailDelete(me) {
   var enDetail1 = me.parentNode.previousElementSibling.previousElementSibling;
-
+  $(".loading").css('display', 'flex')
   console.log(enDetail1);
   fetch(getAllUrl, {
     method: "get",
@@ -383,10 +383,22 @@ function detailDelete(me) {
           let detail_error = json.detail;
           if (detail_error.code === "ER013") {
             alert("로그인 후 이용해주시길 바랍니다.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER014") {
             alert("재로그인이 필요합니다.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER015") {
             alert("로그인 후 이용해주시길 바랍니다.");
+            localStorage.clear();
+            sessionStorage.clear();
+            $(".loading").hide()
+            location.href = "/login"
           } else if (detail_error.code === "ER016") {
             alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
           } else if (detail_error.code === "ER017") {
@@ -403,7 +415,7 @@ function detailDelete(me) {
           });
           const matchEnglish = detailEnglishAll.indexOf(enDetail1.value);
           const bodyCreated_At = data.data[matchEnglish].Created_At;
-
+          
           fetch(noteDeleteUrl, {
             method: "delete",
             headers: {
@@ -428,10 +440,22 @@ function detailDelete(me) {
                   let detail_error = json.detail;
                   if (detail_error.code === "ER013") {
                     alert("로그인 후 이용해주시길 바랍니다.");
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    $(".loading").hide()
+                    location.href = "/login"
                   } else if (detail_error.code === "ER014") {
                     alert("재로그인이 필요합니다.");
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    $(".loading").hide()
+                    location.href = "/login"
                   } else if (detail_error.code === "ER015") {
                     alert("로그인 후 이용해주시길 바랍니다.");
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    $(".loading").hide()
+                    location.href = "/login"
                   } else if (detail_error.code === "ER016") {
                     alert("비활성화된 유저입니다. 관리자에게 문의해주세요.");
                   }

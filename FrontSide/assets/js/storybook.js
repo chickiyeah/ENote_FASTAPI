@@ -345,7 +345,7 @@ window.addEventListener("load", async() => {
                       return (
                         '<div class="bg" style="margin-bottom:26px;"><p class="title"><a href="#">' +
                         categoryList[i] +
-                        '</a></p><input type="text" class="titleInput" style="display:none;" /><button class="inputeditBtn" style="display:none;">수정하기</button><a href="#" class="menu"><i class="fa-solid fa-ellipsis-vertical" style="color: #000000"></i><ul class="story-hide"><li class="edit">수정</li><li class="remove">삭제</li></ul></a></div>'
+                        '</a></p><input type="text" class="titleInput" style="display:none;" /><button class="inputeditBtn" style="display:none;">수정하기</button><a href="#" class="menu"><div class="s_edit"><i class="fa-solid fa-ellipsis-vertical" style="color: #000000"></i></div><ul class="story-hide"><li class="edit">수정</li><li class="remove">삭제</li></ul></a></div>'
                       );
                     })
                     .join("");
@@ -354,7 +354,7 @@ window.addEventListener("load", async() => {
                   
                   storyBookBox.insertAdjacentHTML("beforeend", allCategoryList.toString())
                   $(".story-hide").hide();
-                  $(".menu>i")
+                  $(".menu>.s_edit")
                     .off("click")
                     .on("click", function (e) {
                       //off 메서드를 혼합하여 사용함으로써 해당 이벤트 중복 오류를 막을 수 있었습니다.

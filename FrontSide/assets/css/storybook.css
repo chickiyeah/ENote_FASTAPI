@@ -146,10 +146,14 @@ main .storybook-group .storybook-box .bg p a {
     font-weight: 500;
 }
 
-main .storybook-group .storybook-box .bg a>i {
+main .storybook-group .storybook-box .bg a>div {
     position: absolute;
+    display: flex;
+    justify-content: center;
     top: 14px;
-    right: 14px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
 }
 .title{
     width:100%;
