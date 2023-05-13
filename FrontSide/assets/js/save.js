@@ -286,13 +286,15 @@ window.addEventListener("load", () => {
       //저장기능
       saveBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        const enRegex = /^[a-z|A-Z]+$/;
-        const koRegex = /^[ㄱ-ㅎ|가-힣|ㅏ-ㅣ|,]+$/;
+        const enRegex = /^[a-z|A-Z|\s]+$/;
+        const koRegex = /^[ㄱ-ㅎ|가-힣|ㅏ-ㅣ|,\s]+$/;
         if (enSpace.value.length <= 0 || koSpace.value.length <= 0) {
+          
           //형식에 맞게 입력하게 하기
           if (!enRegex.test(enSpace.value) && !koRegex.test(koSpace.value)) {
             alert("형식에 맞게 입력해주세요.");
           } else {
+            $(".loading").css('display', 'flex')
             let translate = confirm(
               "번역 기능을 사용해 빈칸을 채우시겠습니까?"
             );
@@ -301,13 +303,16 @@ window.addEventListener("load", () => {
               if (enSpace.value.length <= 0) {
                 detectLangFetch(koSpace, getDataTranslate(koSpace, enSpace));
                 enSpace.focus();
+                $(".loading").hide()
                 //한국어칸이 공백일 때
               } else if (koSpace.value.length <= 0) {
                 detectLangFetch(enSpace, getDataTranslate(enSpace, koSpace));
                 koSpace.focus();
+                $(".loading").hide()
               }
             } else {
-              alert("빈칸을 채워주세요.");
+              alert("빈칸을 채워주세요.");+
+              $(".loading").hide()
             }
           }
         } else {
